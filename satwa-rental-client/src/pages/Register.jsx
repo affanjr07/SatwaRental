@@ -32,7 +32,7 @@ export default function Register() {
     setLoading(true);
 
     const res = await register({
-      name: form.name,
+      username: form.name,     // IMPORTANT: sesuaikan ke backend
       email: form.email,
       password: form.password,
     });

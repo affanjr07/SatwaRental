@@ -124,6 +124,37 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ===== CUSTOMER REVIEWS ===== */}
+<section className="py-20 bg-gray-50">
+  <h2 className="text-3xl font-bold text-center mb-12">Review Pelanggan</h2>
+
+  <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 px-6">
+
+    <ReviewCard
+      img="https://i.pravatar.cc/150?img=32"
+      name="Rizka"
+      review="Pelayanan sangat ramah, mobil dalam kondisi bersih dan wangi. Harga juga terjangkau. Recommended banget!"
+      rating={5}
+    />
+
+    <ReviewCard
+      img="https://i.pravatar.cc/150?img=12"
+      name="Rizky Andriansyah"
+      review="Driver datang tepat waktu, proses peminjaman cepat dan tidak ribet. Pasti sewa di sini lagi!"
+      rating={5}
+    />
+
+    <ReviewCard
+      img="https://i.pravatar.cc/150?img=45"
+      name="Siti Aisyah"
+      review="Motor yang saya sewa sangat irit dan performanya mantap. Pokoknya puas sekali!"
+      rating={4}
+    />
+
+  </div>
+</section>
+
+
     </div>
   );
 }
@@ -155,3 +186,33 @@ function WhyUsCard({ icon, title, desc }) {
     </div>
   );
 }
+/* ===== REVIEW CARD ===== */
+function ReviewCard({ img, name, review, rating }) {
+  return (
+    <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl hover:-translate-y-1 transition transform">
+      
+      {/* Foto & Nama */}
+      <div className="flex items-center gap-4 mb-4">
+        <img
+          src={img}
+          alt={name}
+          className="w-16 h-16 rounded-full object-cover shadow"
+        />
+        <div>
+          <h3 className="text-xl font-semibold">{name}</h3>
+
+          {/* Rating */}
+          <div className="text-yellow-500 text-lg">
+            {"⭐".repeat(rating)}
+          </div>
+        </div>
+      </div>
+
+      {/* Review */}
+      <p className="text-gray-600 leading-relaxed">
+        “{review}”
+      </p>
+    </div>
+  );
+}
+

@@ -7,17 +7,23 @@ export default function Booking() {
   const [tanggalSelesai, setTanggalSelesai] = useState("");
   const [totalHarga, setTotalHarga] = useState("");
 
-  // Data kendaraan (nanti bisa diganti API)
+  // ===== AMBIL DATA KENDARAAN DARI LOCALSTORAGE =====
   useEffect(() => {
-    const data = [
-      { id: 1, nama: "Toyota Avanza", harga: 350000 },
-      { id: 2, nama: "Honda Beat", harga: 90000 },
-      { id: 3, nama: "Suzuki Ertiga", harga: 370000 },
-    ];
-    setVehicles(data);
+    const stored = localStorage.getItem("satwa_vehicles");
+    if (stored) {
+      const data = JSON.parse(stored);
+      setVehicles(data);
+    }
+
+    // Jika user klik "BOOK" di VehicleCard
+    const selected = localStorage.getItem("selected_vehicle");
+    if (selected) {
+      const parsed = JSON.parse(selected);
+      setSelectedId(parsed.id); // otomatis memilih kendaraan
+    }
   }, []);
 
-  // Hitung total harga otomatis
+  // ===== HITUNG TOTAL HARGA OTOMATIS =====
   useEffect(() => {
     const kendaraan = vehicles.find((v) => v.id == selectedId);
     if (!kendaraan || !tanggalMulai || !tanggalSelesai) return;
@@ -33,7 +39,7 @@ export default function Booking() {
     }
   }, [selectedId, tanggalMulai, tanggalSelesai, vehicles]);
 
-  // Handle submit
+  // SUBMIT
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!selectedId || !tanggalMulai || !tanggalSelesai || !totalHarga) {
@@ -49,15 +55,14 @@ export default function Booking() {
     };
 
     console.log("Booking terkirim:", bookingData);
-    alert("Booking berhasil dikirim (simulasi).");
+    alert("Booking berhasil (simulasi).");
 
+    localStorage.removeItem("selected_vehicle");
     window.location.href = "/";
   };
 
   return (
     <div className="bg-gray-100 text-gray-800 min-h-screen flex flex-col">
-      {/* NAVBAR */}
-      
 
       {/* BOOKING FORM */}
       <main className="flex-1 max-w-3xl mx-auto mt-10 bg-white shadow-md rounded-2xl p-8">
@@ -66,6 +71,7 @@ export default function Booking() {
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          
           {/* PILIH KENDARAAN */}
           <div>
             <label className="block text-sm font-medium mb-1">Pilih Kendaraan</label>

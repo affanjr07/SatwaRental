@@ -51,6 +51,43 @@ export default function Vehicles() {
         />
       </a>
 
+      {/* FOOTER */}
+<footer className="bg-gray-900 text-white py-10 mt-20">
+  <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-10 text-center md:text-left">
+
+    {/* Brand */}
+    <div>
+      <h3 className="text-2xl font-bold mb-3">SatwaRental</h3>
+      <p className="text-gray-300">
+        Platform rental mobil & motor terpercaya dengan harga terbaik dan layanan 24 jam.
+      </p>
+    </div>
+
+    {/* Menu */}
+    <div>
+      <h4 className="text-xl font-semibold mb-3">Menu</h4>
+      <ul className="space-y-2 text-gray-300">
+        <li><a href="/" className="hover:text-white">Home</a></li>
+        <li><a href="/vehicles" className="hover:text-white">Kendaraan</a></li>
+        <li><a href="/about" className="hover:text-white">Tentang Kami</a></li>
+      </ul>
+    </div>
+
+    {/* Contact */}
+    <div>
+      <h4 className="text-xl font-semibold mb-3">Kontak</h4>
+      <p className="text-gray-300">📍 Medan, Sumatera Utara</p>
+      <p className="text-gray-300">☎ 0821-6691-9100</p>
+      <p className="text-gray-300">✉ satwarental@gmail.com</p>
+    </div>
+  </div>
+
+  <p className="text-center text-gray-400 mt-8">
+    © {new Date().getFullYear()} SatwaRental — All Rights Reserved
+  </p>
+</footer>
+
+
     </div>
   );
 }

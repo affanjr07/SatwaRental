@@ -1,93 +1,47 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState } from "react";
 
 const AuthContext = createContext();
-
-// akun default (admin & user)
-const hardcoded = [
-  { email: "admin", password: "admin123", role: "admin", username: "Admin" },
-  { email: "user", password: "user123", role: "user", username: "User" },
-];
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
 
-  // ambil user login + semua user dari localStorage
-  useEffect(() => {
-    const storedUser = localStorage.getItem("satwa_user");
-    if (storedUser) setUser(JSON.parse(storedUser));
-  }, []);
+  async function login({ email, password }) {
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-  // ambil daftar user tersimpan dari localStorage
-  const getRegisteredUsers = () => {
-    const saved = localStorage.getItem("satwa_users");
-    return saved ? JSON.parse(saved) : [];
-  };
+      const data = await res.json();
+      if (!res.ok) return { ok: false, message: data.message };
 
-  // REGISTER ► simpan user baru
-  const register = ({ username, email, password }) => {
-    const existing = getRegisteredUsers();
-
-    // cek jika email sudah dipakai
-    if (existing.find(u => u.email === email)) {
-      return { ok: false, message: "Email sudah terdaftar." };
+      setUser(data.user);
+      return { ok: true, user: data.user };
+    } catch (error) {
+      return { ok: false, message: "Server error" };
     }
+  }
 
-    const newUser = { username, email, password, role: "user" };
+  async function register({ name, email, password }) {
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
 
-    const updatedUsers = [...existing, newUser];
+      const data = await res.json();
+      if (!res.ok) return { ok: false, message: data.message };
 
-    localStorage.setItem("satwa_users", JSON.stringify(updatedUsers));
-
-    return { ok: true, message: "Pendaftaran berhasil!" };
-  };
-
-  // LOGIN ► cek admin/user hardcoded + user register
-  const login = ({ email, password }) => {
-    // check registered users first
-    const registered = getRegisteredUsers();
-    const regUser = registered.find(
-      u => u.email === email && u.password === password
-    );
-
-    if (regUser) {
-      const payload = {
-        email: regUser.email,
-        role: regUser.role,
-        username: regUser.username,
-      };
-      setUser(payload);
-      localStorage.setItem("satwa_user", JSON.stringify(payload));
-      return { ok: true, user: payload };
+      return { ok: true };
+    } catch (error) {
+      return { ok: false, message: "Server error" };
     }
-
-    // fallback check hardcoded admin + default user
-    const hard = hardcoded.find(
-      x => x.email === email && x.password === password
-    );
-
-    if (!hard) {
-      return { ok: false, message: "Email atau password salah" };
-    }
-
-    const payload = {
-      email: hard.email,
-      role: hard.role,
-      username: hard.username,
-    };
-
-    setUser(payload);
-    localStorage.setItem("satwa_user", JSON.stringify(payload));
-
-    return { ok: true, user: payload };
-  };
-
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("satwa_user");
-  };
+  }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, register }}>
+    <AuthContext.Provider value={{ user, login, register }}>
       {children}
     </AuthContext.Provider>
   );

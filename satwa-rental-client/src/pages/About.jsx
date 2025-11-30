@@ -69,20 +69,26 @@ export default function Home() {
         <div className="w-[90%] max-w-[1000px] mx-auto">
           <h2 className="text-3xl font-bold mb-4">Mari Terhubung!</h2>
           <p className="mb-6">
-            Siap untuk bepergian? Jika Anda memiliki pertanyaan lebih lanjut, jangan ragu untuk menghubungi tim dukungan kami.
-            Kami siap membantu Anda merencanakan perjalanan yang sempurna!
+            Jika Anda memiliki pertanyaan lebih lanjut, jangan ragu untuk menghubungi kami.
           </p>
-
-          <a
-            href="https://wa.me/6282166919100"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="bg-green-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-green-700 transition"
-          >
-            Hubungi Kami Sekarang
-          </a>
         </div>
       </section>
+
+
+      {/* FLOATING WHATSAPP BUTTON */}
+      <a
+        href="https://wa.me/6282166919100"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 bg-green-500 p-4 rounded-full shadow-xl 
+                  hover:bg-green-600 transition transform hover:scale-110"
+      >
+        <img
+          src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
+          alt="WhatsApp"
+          className="w-10 h-10"
+        />
+      </a>
 
     </div>
   );

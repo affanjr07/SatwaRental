@@ -8,16 +8,24 @@ export default function VehicleCard({ v }) {
   const [message, setMessage] = useState("");
 
   const handleBook = () => {
-    setMessage(""); // reset message
+    setMessage("");
 
     if (!user) {
       setMessage("Silakan login terlebih dahulu untuk menyewa kendaraan!");
-      setTimeout(() => nav("/login"), 1000); // redirect setelah 1 detik
+      setTimeout(() => nav("/login"), 1000);
       return;
     }
 
+    if (!v.id) {
+      alert("Kendaraan tidak memiliki ID! Periksa database Supabase.");
+      return;
+    }
+
+    // Simpan sementara
     localStorage.setItem("selected_vehicle", JSON.stringify(v));
-    nav("/booking");
+
+    // Redirect yang benar
+    nav(`/booking/${v.id}`);
   };
 
   const price = v.harga ?? v.price_per_day ?? v.pricePerDay ?? 0;

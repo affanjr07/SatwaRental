@@ -28,13 +28,17 @@ export function AuthProvider({ children }) {
       const data = await res.json();
       if (!res.ok) return { ok: false, message: data.msg };
 
+      // SIMPAN DI LOCALSTORAGE
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
+      // SET STATE
       setUser(data.user);
       setToken(data.token);
 
-      return { ok: true };
+      // WAJIB: kembalikan user & token
+      return { ok: true, user: data.user, token: data.token };
+
     } catch {
       return { ok: false, message: "Server error" };
     }

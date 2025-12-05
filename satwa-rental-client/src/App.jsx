@@ -8,6 +8,7 @@ import Register from "./pages/Register.jsx";
 import Admin from "./pages/Admin.jsx";
 import About from "./pages/About.jsx";
 import Booking from "./pages/Booking.jsx";
+import Terms from "./pages/Terms.jsx";
 
 import Nav from "./components/Nav.jsx";
 import PrivateRoute from "./components/PrivateRoute.jsx";
@@ -23,6 +24,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/vehicles" element={<Vehicles />} />
           <Route path="/about" element={<About />} />
+          <Route path="/terms" element={<Terms />} />
 
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />

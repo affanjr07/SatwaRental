@@ -17,7 +17,6 @@ export default function Booking() {
       .catch((err) => console.error("Gagal ambil kendaraan:", err));
   }, [id]);
 
-  // Hitung total harga berdasarkan tanggal
   useEffect(() => {
     if (!vehicle || !tanggalMulai || !tanggalSelesai) return;
 
@@ -43,14 +42,14 @@ export default function Booking() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
 
-        {/* ▌ KENDARAAN DIPILIH */}
+        {/* INFORMASI KENDARAAN */}
         <div className="bg-white shadow-lg rounded-xl p-6">
           <h2 className="text-xl font-semibold mb-4">Kendaraan Dipilih</h2>
 
           <img
             src={vehicle.image_url}
             alt={vehicle.name}
-            className="w-full h-60 object-cover rounded-lg mb-4"
+            className="w-full h-56 object-cover rounded-lg mb-4 bg-gray-200"
           />
 
           <h3 className="text-2xl font-bold">{vehicle.name}</h3>
@@ -59,11 +58,11 @@ export default function Booking() {
             Rp {vehicle.price_per_day.toLocaleString()}/hari
           </p>
 
-          {/* Spesifikasi */}
+          {/* SPESIFIKASI */}
           {vehicle.specification?.length > 0 && (
             <div className="mt-4">
               <h4 className="font-semibold mb-1">Spesifikasi:</h4>
-              <ul className="list-disc ml-5 text-gray-600">
+              <ul className="list-disc ml-5 text-gray-600 space-y-1">
                 {vehicle.specification.map((sp, i) => (
                   <li key={i}>{sp}</li>
                 ))}
@@ -72,7 +71,7 @@ export default function Booking() {
           )}
         </div>
 
-        {/* ▌ FORM PEMESANAN */}
+        {/* FORM PEMESANAN */}
         <div className="bg-white shadow-lg rounded-xl p-6">
           <h2 className="text-xl font-semibold mb-4">Isi Data Pemesanan</h2>
 
@@ -96,7 +95,6 @@ export default function Booking() {
             />
           </div>
 
-          {/* ▌ RINGKASAN PEMESANAN */}
           <div className="mt-6 p-4 bg-gray-50 border rounded-lg">
             <h3 className="font-bold text-lg mb-2">Ringkasan Pemesanan</h3>
 

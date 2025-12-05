@@ -1,17 +1,17 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import Home from "./pages/Home";
-import Vehicles from "./pages/Vehicles";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Admin from "./pages/Admin";
-import About from "./pages/About";
-import Booking from "./pages/Booking";
+import Home from "./pages/Home.jsx";
+import Vehicles from "./pages/Vehicles.jsx";
+import Login from "./pages/Login.jsx";
+import Register from "./pages/Register.jsx";
+import Admin from "./pages/Admin.jsx";
+import About from "./pages/About.jsx";
+import Booking from "./pages/Booking.jsx";
 
-import Nav from "./components/Nav";
-import PrivateRoute from "./components/PrivateRoute";
-import { AuthProvider } from "./context/AuthContext";
+import Nav from "./components/Nav.jsx";
+import PrivateRoute from "./components/PrivateRoute.jsx";
+import { AuthProvider } from "./context/AuthContext.jsx";
 
 export default function App() {
   return (
@@ -23,7 +23,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/vehicles" element={<Vehicles />} />
           <Route path="/about" element={<About />} />
-          
+
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
@@ -38,7 +38,7 @@ export default function App() {
           />
 
           <Route
-            path="/booking"
+            path="/booking/:id"
             element={
               <PrivateRoute>
                 <Booking />

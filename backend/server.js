@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import authRoutes from "./routes/authRoutes.js";
 import vehicleRoutes from "./routes/vehicleRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 
 const app = express();
 
@@ -12,6 +13,7 @@ const corsOptions = {
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
 };
+app.use("/api/users", userRoutes);
 
 // Middleware CORS
 app.use(cors(corsOptions));

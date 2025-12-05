@@ -5,11 +5,18 @@ import vehicleRoutes from "./routes/vehicleRoutes.js";
 
 const app = express();
 
-app.use(cors({
-  origin: "https://satwa-rental.vercel.app",
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-}));
+// CORS fix (IMPORTANT)
+app.use(
+  cors({
+    origin: ["https://satwa-rental.vercel.app", "http://localhost:5173"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
+
+// Handle OPTIONS manually (Vercel needs this!)
+app.options("*", cors());
 
 app.use(express.json());
 
@@ -17,7 +24,13 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/vehicles", vehicleRoutes);
 
-// --- FIX untuk Vercel ---
+// Required by Vercel
 export default function handler(req, res) {
-  app(req, res); // biar Express jalan di serverless
+  app(req, res);
 }
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};

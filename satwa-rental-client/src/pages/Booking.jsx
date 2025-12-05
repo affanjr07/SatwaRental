@@ -9,6 +9,7 @@ export default function Booking() {
   const [tanggalMulai, setTanggalMulai] = useState("");
   const [tanggalSelesai, setTanggalSelesai] = useState("");
   const [totalHarga, setTotalHarga] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const API = import.meta.env.VITE_API_URL;
 
@@ -20,21 +21,26 @@ export default function Booking() {
       try {
         const res = await fetch(`${API}/api/vehicles`);
         const data = await res.json();
+
+        console.log("Fetch vehicles response:", data);
+
         setVehicles(data);
 
-        // Jika ada ID di URL → set otomatis
+        // Auto pilih kendaraan dari URL
         if (id) {
-          setSelectedId(id);
+          setSelectedId(String(id));  // FIX: convert ke string
         } else {
-          // Jika user datang dari button BOOK tanpa URL id
+          // Jika datang dari button BOOK tanpa id
           const saved = localStorage.getItem("selected_vehicle");
           if (saved) {
             const parsed = JSON.parse(saved);
-            setSelectedId(parsed.id);
+            setSelectedId(String(parsed.id)); // FIX
           }
         }
       } catch (err) {
         console.error("Error fetch vehicles:", err);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -45,7 +51,7 @@ export default function Booking() {
   // HITUNG TOTAL HARGA
   // ==========================
   useEffect(() => {
-    const kendaraan = vehicles.find((v) => v.id == selectedId);
+    const kendaraan = vehicles.find((v) => String(v.id) === String(selectedId));
     if (!kendaraan || !tanggalMulai || !tanggalSelesai) return;
 
     const mulai = new Date(tanggalMulai);
@@ -85,6 +91,17 @@ export default function Booking() {
     window.location.href = "/";
   };
 
+  // ==========================
+  // LOADING STATE
+  // ==========================
+  if (loading) {
+    return (
+      <div className="min-h-screen flex justify-center items-center text-xl">
+        Memuat data kendaraan...
+      </div>
+    );
+  }
+
   return (
     <div className="bg-gray-100 text-gray-800 min-h-screen flex flex-col">
       <main className="flex-1 max-w-3xl mx-auto mt-10 bg-white shadow-md rounded-2xl p-8">
@@ -104,7 +121,7 @@ export default function Booking() {
             >
               <option value="">-- Pilih Kendaraan --</option>
               {vehicles.map((v) => (
-                <option key={v.id} value={v.id}>
+                <option key={v.id} value={String(v.id)}>
                   {v.name} - Rp {v.price_per_day.toLocaleString()}/hari
                 </option>
               ))}

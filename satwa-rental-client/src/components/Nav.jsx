@@ -16,7 +16,7 @@ export default function Nav() {
           <li><Link to="/" className="hover:text-blue-600">Beranda</Link></li>
           <li><Link to="/vehicles" className="hover:text-blue-600">Kendaraan</Link></li>
           <li><Link to="/about" className="hover:text-blue-600">Tentang</Link></li>
-          <li><Link to="/about" className="hover:text-blue-600">Syarat & Ketentuan</Link></li>
+          <li><Link to="/terms" className="hover:text-blue-600">Syarat & Ketentuan</Link></li>
 
           {user ? (
             <>

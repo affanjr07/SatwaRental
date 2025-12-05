@@ -18,3 +18,6 @@ await fetch(`${API}/api/vehicles/${id}`, {
   method: "DELETE",
   headers: { Authorization: `Bearer ${token}` },
 });
+
+export default Admin;
+

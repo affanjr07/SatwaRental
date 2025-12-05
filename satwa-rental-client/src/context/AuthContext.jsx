@@ -1,13 +1,25 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
 const AuthContext = createContext();
+const API = import.meta.env.VITE_API_URL;
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
+
+  useEffect(() => {
+    const savedToken = localStorage.getItem("token");
+    const savedUser = localStorage.getItem("user");
+
+    if (savedToken && savedUser) {
+      setToken(savedToken);
+      setUser(JSON.parse(savedUser));
+    }
+  }, []);
 
   async function login({ email, password }) {
     try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
+      const res = await fetch(`${API}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -16,16 +28,21 @@ export function AuthProvider({ children }) {
       const data = await res.json();
       if (!res.ok) return { ok: false, message: data.msg };
 
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
       setUser(data.user);
-      return { ok: true, user: data.user };
-    } catch (error) {
+      setToken(data.token);
+
+      return { ok: true };
+    } catch {
       return { ok: false, message: "Server error" };
     }
   }
 
   async function register({ username, email, password }) {
     try {
-      const res = await fetch("http://localhost:5000/api/auth/register", {
+      const res = await fetch(`${API}/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, email, password }),
@@ -35,13 +52,20 @@ export function AuthProvider({ children }) {
       if (!res.ok) return { ok: false, message: data.msg };
 
       return { ok: true };
-    } catch (error) {
+    } catch {
       return { ok: false, message: "Server error" };
     }
   }
 
+  function logout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setUser(null);
+    setToken(null);
+  }
+
   return (
-    <AuthContext.Provider value={{ user, login, register }}>
+    <AuthContext.Provider value={{ user, token, login, logout, register }}>
       {children}
     </AuthContext.Provider>
   );

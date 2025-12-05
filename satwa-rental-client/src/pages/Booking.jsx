@@ -7,23 +7,23 @@ export default function Booking() {
   const [tanggalSelesai, setTanggalSelesai] = useState("");
   const [totalHarga, setTotalHarga] = useState("");
 
-  // ===== AMBIL DATA KENDARAAN DARI LOCALSTORAGE =====
   useEffect(() => {
-    const stored = localStorage.getItem("satwa_vehicles");
-    if (stored) {
-      const data = JSON.parse(stored);
+    const load = async () => {
+      const res = await fetch("http://localhost:5000/api/vehicles");
+      const data = await res.json();
       setVehicles(data);
-    }
 
-    // Jika user klik "BOOK" di VehicleCard
-    const selected = localStorage.getItem("selected_vehicle");
-    if (selected) {
-      const parsed = JSON.parse(selected);
-      setSelectedId(parsed.id); // otomatis memilih kendaraan
-    }
+      // Jika user klik BOOK
+      const selected = localStorage.getItem("selected_vehicle");
+      if (selected) {
+        const parsed = JSON.parse(selected);
+        setSelectedId(parsed.id);
+      }
+    };
+
+    load();
   }, []);
 
-  // ===== HITUNG TOTAL HARGA OTOMATIS =====
   useEffect(() => {
     const kendaraan = vehicles.find((v) => v.id == selectedId);
     if (!kendaraan || !tanggalMulai || !tanggalSelesai) return;
@@ -33,17 +33,16 @@ export default function Booking() {
     const hari = Math.ceil((selesai - mulai) / (1000 * 3600 * 24));
 
     if (hari > 0) {
-      setTotalHarga((kendaraan.harga * hari).toLocaleString());
+      setTotalHarga((kendaraan.price_per_day * hari).toLocaleString());
     } else {
       setTotalHarga("");
     }
   }, [selectedId, tanggalMulai, tanggalSelesai, vehicles]);
 
-  // SUBMIT
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!selectedId || !tanggalMulai || !tanggalSelesai || !totalHarga) {
-      alert("Lengkapi semua data terlebih dahulu!");
+      alert("Lengkapi semua data!");
       return;
     }
 
@@ -54,7 +53,7 @@ export default function Booking() {
       total_harga: totalHarga.replace(/\./g, ""),
     };
 
-    console.log("Booking terkirim:", bookingData);
+    console.log("Booking:", bookingData);
     alert("Booking berhasil (simulasi).");
 
     localStorage.removeItem("selected_vehicle");
@@ -63,20 +62,16 @@ export default function Booking() {
 
   return (
     <div className="bg-gray-100 text-gray-800 min-h-screen flex flex-col">
-
-      {/* BOOKING FORM */}
       <main className="flex-1 max-w-3xl mx-auto mt-10 bg-white shadow-md rounded-2xl p-8">
         <h2 className="text-3xl font-bold text-center text-blue-600 mb-6">
-          Formulir Pemesanan Kendaraan
+          Form Pemesanan Kendaraan
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          
-          {/* PILIH KENDARAAN */}
           <div>
-            <label className="block text-sm font-medium mb-1">Pilih Kendaraan</label>
+            <label className="block mb-1">Pilih Kendaraan</label>
             <select
-              className="w-full border border-gray-300 rounded-lg px-4 py-2"
+              className="w-full border px-4 py-2 rounded"
               required
               value={selectedId}
               onChange={(e) => setSelectedId(e.target.value)}
@@ -84,29 +79,28 @@ export default function Booking() {
               <option value="">-- Pilih Kendaraan --</option>
               {vehicles.map((v) => (
                 <option key={v.id} value={v.id}>
-                  {v.nama} - Rp {v.harga.toLocaleString()}/hari
+                  {v.name} - Rp {v.price_per_day.toLocaleString()}/hari
                 </option>
               ))}
             </select>
           </div>
 
-          {/* TANGGAL */}
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Tanggal Mulai</label>
+              <label className="block mb-1">Tanggal Mulai</label>
               <input
                 type="date"
-                className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                className="w-full border px-4 py-2 rounded"
                 required
                 value={tanggalMulai}
                 onChange={(e) => setTanggalMulai(e.target.value)}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Tanggal Selesai</label>
+              <label className="block mb-1">Tanggal Selesai</label>
               <input
                 type="date"
-                className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                className="w-full border px-4 py-2 rounded"
                 required
                 value={tanggalSelesai}
                 onChange={(e) => setTanggalSelesai(e.target.value)}
@@ -114,21 +108,19 @@ export default function Booking() {
             </div>
           </div>
 
-          {/* TOTAL HARGA */}
           <div>
-            <label className="block text-sm font-medium mb-1">Total Harga (Rp)</label>
+            <label className="block mb-1">Total Harga</label>
             <input
               type="text"
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-100"
+              className="w-full border px-4 py-2 bg-gray-100 rounded"
               readOnly
               value={totalHarga}
             />
           </div>
 
-          {/* SUBMIT */}
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition"
+            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
           >
             Konfirmasi Booking
           </button>

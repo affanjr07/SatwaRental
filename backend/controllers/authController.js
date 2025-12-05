@@ -1,70 +1,46 @@
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { findUserByEmail, createUser } from "../models/userModel.js";
+import supabase from "../config/supabase.js";
 
-// REGISTER
-export const register = async (req, res) => {
-  try {
-    const { username, email, password } = req.body;
+export async function register(req, res) {
+  const { username, email, password } = req.body;
 
-    const exist = await findUserByEmail(email);
-    if (exist) return res.status(400).json({ msg: "Email sudah terdaftar" });
+  const hashed = await bcrypt.hash(password, 10);
 
-    const hashed = await bcrypt.hash(password, 10);
+  const { error } = await supabase.from("users").insert([
+    { username, email, password: hashed, role: "user" }
+  ]);
 
-    await createUser(username, email, hashed);
+  if (error) return res.status(400).json({ msg: error.message });
 
-    res.json({ msg: "Register berhasil" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ msg: "Server error" });
-  }
-};
+  return res.json({ msg: "Registered successfully" });
+}
 
-// LOGIN
-export const login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
+export async function login(req, res) {
+  const { email, password } = req.body;
 
-    // ADMIN LOGIN (tanpa database)
-    if (email === "admin@mail.com" && password === "admin123") {
-      return res.json({
-        msg: "Login admin berhasil",
-        user: {
-          id: "admin",
-          username: "Admin",
-          email: "admin@mail.com",
-          role: "admin",
-        },
-        token: "ADMIN_TOKEN",
-      });
+  const { data: user, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("email", email)
+    .single();
+
+  if (error || !user)
+    return res.status(400).json({ msg: "Invalid email or password" });
+
+  const match = await bcrypt.compare(password, user.password);
+  if (!match) return res.status(400).json({ msg: "Invalid email or password" });
+
+  // 🔥 TOKEN SEKARANG MEMBAWA ROLE
+  const token = jwt.sign(
+    { id: user.id, role: user.role },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: "30d",
     }
+  );
 
-    // LOGIN USER REGULER
-    const user = await findUserByEmail(email);
-    if (!user) return res.status(400).json({ msg: "Email tidak ditemukan" });
+  delete user.password;
 
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) return res.status(400).json({ msg: "Password salah" });
-
-    const token = jwt.sign(
-      { id: user.id, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
-
-    res.json({
-      msg: "Login berhasil",
-      user: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        role: "user",
-      },
-      token,
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ msg: "Server error" });
-  }
-};
+  return res.json({ msg: "Login success", user, token });
+}

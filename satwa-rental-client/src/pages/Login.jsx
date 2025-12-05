@@ -8,18 +8,28 @@ export default function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [message, setMessage] = useState(""); // isi pesan
+  const [messageType, setMessageType] = useState("error"); // "error" atau "success"
 
   const onSubmit = async (e) => {
     e.preventDefault();
+    setMessage(""); // reset message
 
     const res = await login({ email, password });
 
-    if (!res.ok) return alert(res.message);
+    if (!res.ok) {
+      setMessageType("error");
+      setMessage(res.message); // tampilkan pesan error
+      return;
+    }
 
-    alert("Login berhasil!");
+    setMessageType("success");
+    setMessage("Berhasil login!"); // sukses login
 
-    if (res.user.role === "admin") nav("/admin");
-    else nav("/");
+    setTimeout(() => {
+      if (res.user.role === "admin") nav("/admin");
+      else nav("/");
+    }, 1000);
   };
 
   return (
@@ -55,6 +65,17 @@ export default function Login() {
               required
             />
           </div>
+
+          {/* Tampilan pesan */}
+          {message && (
+            <p
+              className={`text-sm ${
+                messageType === "success" ? "text-green-600" : "text-red-600"
+              }`}
+            >
+              {message}
+            </p>
+          )}
 
           <button
             type="submit"

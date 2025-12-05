@@ -31,16 +31,6 @@ export default function Nav() {
 
           {user ? (
             <>
-              {/* tombol Profil */}
-              <li>
-                <Link
-                  to="/profile"
-                  className="hover:text-blue-600"
-                >
-                  Profil
-                </Link>
-              </li>
-
               {/* admin panel */}
               {user.role === "admin" && (
                 <li>

@@ -1,149 +1,149 @@
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { Check, Copy } from "lucide-react";
+
+import danaLogo from "../assets/payments/dana.png";
+import gopayLogo from "../assets/payments/gopay.png";
+import shopeeLogo from "../assets/payments/shopeepay.png";
+import qrisLogo from "../assets/payments/qris.png";
+import bcaLogo from "../assets/payments/bca.png";
+import briLogo from "../assets/payments/bri.png";
 
 export default function Payment() {
-  const { state } = useLocation();
+  const [openCategory, setOpenCategory] = useState(null);
+  const [openMethod, setOpenMethod] = useState(null);
+  const [copied, setCopied] = useState("");
 
-  if (!state) {
-    return <p className="pt-24 text-center">Data booking tidak ditemukan.</p>;
-  }
-
-  const { vehicle, totalHarga, tanggalMulai, tanggalSelesai } = state;
-
-  const [openSection, setOpenSection] = useState(null);
-  const [openEwallet, setOpenEwallet] = useState(null);
-
-  const toggleSection = (name) => {
-    setOpenSection(openSection === name ? null : name);
-    setOpenEwallet(null);
+  const paymentData = {
+    ewallet: {
+      label: "E-Wallet",
+      methods: {
+        dana: { label: "Dana", number: "0895-1234-5678", logo: danaLogo },
+        gopay: { label: "GoPay", number: "0812-9876-5432", logo: gopayLogo },
+        shopeepay: { label: "ShopeePay", number: "0857-4444-2222", logo: shopeeLogo },
+        qris: { label: "QRIS", number: "SCAN QR", logo: qrisLogo },
+      },
+    },
+    bank: {
+      label: "Bank Transfer",
+      methods: {
+        bca: { label: "Bank BCA", number: "1234567890", logo: bcaLogo },
+        bri: { label: "Bank BRI", number: "0900123456", logo: briLogo },
+      },
+    },
   };
 
-  const toggleEwallet = (name) => {
-    setOpenEwallet(openEwallet === name ? null : name);
+  const copyText = (text, key) => {
+    navigator.clipboard.writeText(text);
+    setCopied(key);
+
+    setTimeout(() => setCopied(""), 1500);
   };
 
   return (
-    <div className="pt-24 pb-20 px-6 container mx-auto">
-      <h1 className="text-3xl font-bold text-center mb-8">Pembayaran</h1>
+    <div className="max-w-xl mx-auto mt-10 p-5">
+      <h1 className="text-3xl font-extrabold mb-6 text-center bg-gradient-to-r from-blue-500 to-purple-600 text-transparent bg-clip-text">
+        Metode Pembayaran
+      </h1>
 
-      <div className="bg-white rounded-2xl shadow-xl p-6 max-w-3xl mx-auto">
-        
-        {/* Detail Pesanan */}
-        <h2 className="text-xl font-semibold mb-4">Detail Pesanan</h2>
+      {Object.entries(paymentData).map(([key, cat]) => (
+        <div key={key} className="mb-4">
 
-        <p><b>Kendaraan:</b> {vehicle.name}</p>
-        <p><b>Tanggal:</b> {tanggalMulai} - {tanggalSelesai}</p>
-        <p><b>Total Pembayaran:</b> Rp {totalHarga.toLocaleString()}</p>
-
-        <hr className="my-6" />
-
-        {/* METODE PEMBAYARAN */}
-        <h2 className="text-2xl font-bold mb-4">Metode Pembayaran</h2>
-
-        {/* QRIS */}
-        <div className="border rounded-xl mb-4">
+          {/* CATEGORY BUTTON */}
           <button
-            className="w-full text-left p-4 font-semibold text-blue-600"
-            onClick={() => toggleSection("qris")}
+            onClick={() =>
+              setOpenCategory(openCategory === key ? null : key)
+            }
+            className="w-full bg-white shadow-lg border p-4 rounded-2xl font-semibold text-left hover:bg-gray-50 duration-200 flex justify-between items-center"
           >
-            QRIS
-          </button>
-          {openSection === "qris" && (
-            <div className="p-4 border-t text-center">
-              <p className="mb-3 text-gray-600">Scan QR ini untuk membayar:</p>
-              <img src="./img/qr.png" alt="QRIS" className="w-64 mx-auto rounded shadow" />
-            </div>
-          )}
-        </div>
-
-        {/* BANK TRANSFER */}
-        <div className="border rounded-xl mb-4">
-          <button
-            className="w-full text-left p-4 font-semibold text-green-600"
-            onClick={() => toggleSection("bank")}
-          >
-            Transfer Bank Mandiri
-          </button>
-          {openSection === "bank" && (
-            <div className="p-4 border-t">
-              <p className="font-bold text-lg">123-456-7890</p>
-              <p className="text-gray-600">A/N M Affan Afyga</p>
-            </div>
-          )}
-        </div>
-
-        {/* E-WALLET */}
-        <div className="border rounded-xl mb-4">
-          <button
-            className="w-full text-left p-4 font-semibold text-purple-600"
-            onClick={() => toggleSection("ewallet")}
-          >
-            E-Wallet
+            {cat.label}
+            <span>{openCategory === key ? "▲" : "▼"}</span>
           </button>
 
-          {openSection === "ewallet" && (
-            <div className="border-t">
-
-              {/* Dana */}
-              <button
-                className="w-full text-left p-4 font-medium"
-                onClick={() => toggleEwallet("dana")}
+          {/* CATEGORY DROPDOWN */}
+          <AnimatePresence>
+            {openCategory === key && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="overflow-hidden"
               >
-                Dana
-              </button>
-              {openEwallet === "dana" && (
-                <div className="px-4 pb-4 text-gray-700">
-                  <p><b>No Dana:</b> 081293735336</p>
-                </div>
-              )}
+                <div className="mt-3 flex flex-col gap-3 pl-2">
 
-              {/* GoPay */}
-              <button
-                className="w-full text-left p-4 font-medium"
-                onClick={() => toggleEwallet("gopay")}
-              >
-                GoPay
-              </button>
-              {openEwallet === "gopay" && (
-                <div className="px-4 pb-4 text-gray-700">
-                  <p><b>No GoPay:</b> 081293735336</p>
-                </div>
-              )}
+                  {Object.entries(cat.methods).map(([methodKey, method]) => (
+                    <div key={methodKey}>
+                      
+                      {/* METHOD BUTTON */}
+                      <button
+                        onClick={() =>
+                          setOpenMethod(
+                            openMethod === methodKey ? null : methodKey
+                          )
+                        }
+                        className="w-full bg-white shadow-md hover:shadow-lg border rounded-xl p-3 flex items-center gap-3 duration-200"
+                      >
+                        <img src={method.logo} alt="" className="w-10 h-10 rounded-lg" />
+                        <span className="font-medium">{method.label}</span>
+                      </button>
 
-              {/* ShopeePay */}
-              <button
-                className="w-full text-left p-4 font-medium"
-                onClick={() => toggleEwallet("shopee")}
-              >
-                ShopeePay
-              </button>
-              {openEwallet === "shopee" && (
-                <div className="px-4 pb-4 text-gray-700">
-                  <p><b>No ShopeePay:</b> 081293735336</p>
+                      {/* NUMBER DROPDOWN */}
+                      <AnimatePresence>
+                        {openMethod === methodKey && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="bg-gray-50 border rounded-xl p-4 mt-2 shadow flex justify-between items-center">
+                              <div>
+                                <p className="text-sm text-gray-600">Nomor Pembayaran</p>
+
+                                <p className="font-mono font-bold text-lg">
+                                  {method.number}
+                                </p>
+                              </div>
+
+                              <button
+                                onClick={() => copyText(method.number, methodKey)}
+                                className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg flex items-center gap-2 duration-200"
+                              >
+                                {copied === methodKey ? (
+                                  <Check size={18} />
+                                ) : (
+                                  <Copy size={18} />
+                                )}
+                                {copied === methodKey ? "Tersalin" : "Salin"}
+                              </button>
+                            </div>
+
+                            {/* QR IMAGE FOR QRIS (OPTIONAL) */}
+                            {method.label === "QRIS" && (
+                              <div className="mt-3">
+                                <img
+                                  src={method.logo}
+                                  alt="QRIS Code"
+                                  className="w-40 mx-auto rounded-lg shadow"
+                                />
+                                <p className="text-center text-sm mt-2 text-gray-600">
+                                  Scan untuk membayar via QRIS
+                                </p>
+                              </div>
+                            )}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+
+                    </div>
+                  ))}
+
                 </div>
-              )}
-            </div>
-          )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-
-        {/* METODE LAIN */}
-        <div className="border rounded-xl">
-          <button
-            className="w-full text-left p-4 font-semibold text-gray-700"
-            onClick={() => toggleSection("lain")}
-          >
-            Metode Lain (Dalam Pengembangan)
-          </button>
-
-          {openSection === "lain" && (
-            <div className="p-4 border-t text-gray-500">
-              ShopeePay • OVO • LinkAja • Kredivo • Indomaret • Alfamart  
-              <br />
-              <b>⚠️ Belum tersedia</b>
-            </div>
-          )}
-        </div>
-      </div>
+      ))}
     </div>
   );
 }

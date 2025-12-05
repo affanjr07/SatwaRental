@@ -50,7 +50,7 @@ export default function Home() {
             bg="from-purple-600 to-pink-600"
             title="Layanan 24 Jam"
             desc="Kami siap membantu kapan saja untuk kebutuhan mendadak kamu."
-            link="/layanan"
+            link="https://wa.me/6282166919100"
             btn="Pelajari Lebih"
           />
         </div>

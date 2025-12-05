@@ -9,7 +9,10 @@ export default function Booking() {
 
   useEffect(() => {
     const load = async () => {
-      const res = await fetch("http://localhost:5000/api/vehicles");
+      const API = import.meta.env.VITE_API_URL;
+
+      const res = await fetch(`${API}/api/vehicles`);
+
       const data = await res.json();
       setVehicles(data);
 

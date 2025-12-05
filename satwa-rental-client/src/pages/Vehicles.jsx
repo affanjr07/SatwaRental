@@ -26,13 +26,11 @@ export default function Vehicles() {
 
   const filteredVehicles = vehicles.filter((v) => {
     const nameMatch =
-      v.name?.toLowerCase().includes(search.toLowerCase()) ||
-      v.nama?.toLowerCase().includes(search.toLowerCase());
+      (v.name ?? v.nama ?? "").toLowerCase().includes(search.toLowerCase());
 
     const typeMatch =
       filterType === "all" ||
-      v.type === filterType ||
-      v.jenis === filterType;
+      (v.type ?? v.jenis ?? "").toLowerCase() === filterType.toLowerCase();
 
     return nameMatch && typeMatch;
   });
@@ -44,7 +42,7 @@ export default function Vehicles() {
           Daftar Kendaraan
         </h1>
 
-        {/* 🔍 Search + Filter */}
+        {/* SEARCH + FILTER */}
         <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 px-6 mb-10">
           <input
             type="text"
@@ -60,8 +58,8 @@ export default function Vehicles() {
             className="w-full md:w-1/3 px-4 py-3 rounded-lg border shadow-sm outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="all">Semua Kendaraan</option>
-            <option value="Mobil">Mobil</option>
-            <option value="Motor">Motor</option>
+            <option value="mobil">Mobil</option>
+            <option value="motor">Motor</option>
           </select>
         </div>
 
@@ -72,9 +70,7 @@ export default function Vehicles() {
               Tidak ada kendaraan yang cocok dengan pencarian.
             </p>
           ) : (
-            filteredVehicles.map((v) => (
-              <VehicleCard key={v.id} v={v} />
-            ))
+            filteredVehicles.map((v) => <VehicleCard key={v.id} v={v} />)
           )}
         </div>
       </div>
@@ -82,20 +78,32 @@ export default function Vehicles() {
       {/* FOOTER */}
       <footer className="bg-gray-900 text-white py-10 mt-20">
         <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-10 text-center md:text-left">
-
           <div>
             <h3 className="text-2xl font-bold mb-3">SatwaRental</h3>
             <p className="text-gray-300">
-              Platform rental mobil & motor terpercaya dengan harga terbaik dan layanan 24 jam.
+              Platform rental mobil & motor terpercaya dengan harga terbaik dan
+              layanan 24 jam.
             </p>
           </div>
 
           <div>
             <h4 className="text-xl font-semibold mb-3">Menu</h4>
             <ul className="space-y-2 text-gray-300">
-              <li><Link to="/" className="hover:text-white">Home</Link></li>
-              <li><Link to="/vehicles" className="hover:text-white">Kendaraan</Link></li>
-              <li><Link to="/about" className="hover:text-white">Tentang Kami</Link></li>
+              <li>
+                <Link to="/" className="hover:text-white">
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link to="/vehicles" className="hover:text-white">
+                  Kendaraan
+                </Link>
+              </li>
+              <li>
+                <Link to="/about" className="hover:text-white">
+                  Tentang Kami
+                </Link>
+              </li>
             </ul>
           </div>
 

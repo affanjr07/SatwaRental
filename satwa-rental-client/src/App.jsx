@@ -6,8 +6,6 @@ import Vehicles from "./pages/Vehicles.jsx";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import Admin from "./pages/Admin.jsx";
-import AddVehicle from "./pages/AddVehicle.jsx";
-import EditVehicle from "./pages/EditVehicle.jsx";
 import About from "./pages/About.jsx";
 import Booking from "./pages/Booking.jsx";
 
@@ -21,7 +19,6 @@ export default function App() {
       <BrowserRouter>
         <Nav />
         <Routes>
-
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/vehicles" element={<Vehicles />} />
@@ -30,7 +27,7 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
-          {/* Admin Protected Routes */}
+          {/* Protected Routes */}
           <Route
             path="/admin"
             element={
@@ -41,25 +38,6 @@ export default function App() {
           />
 
           <Route
-            path="/admin/add"
-            element={
-              <PrivateRoute>
-                <AddVehicle />
-              </PrivateRoute>
-            }
-          />
-
-          <Route
-            path="/admin/edit/:id"
-            element={
-              <PrivateRoute>
-                <EditVehicle />
-              </PrivateRoute>
-            }
-          />
-
-          {/* Booking Protected */}
-          <Route
             path="/booking/:id"
             element={
               <PrivateRoute>
@@ -67,7 +45,6 @@ export default function App() {
               </PrivateRoute>
             }
           />
-
         </Routes>
       </BrowserRouter>
     </AuthProvider>

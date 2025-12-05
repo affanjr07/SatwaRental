@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import supabase from "../../../backend/config/supabase.js";
+import { supabase } from "../lib/supabaseClient.js"; 
 import { useAuth } from "../context/AuthContext";
 
 export default function Profile() {
@@ -16,7 +16,7 @@ export default function Profile() {
 
     const { data, error } = await supabase
       .from("bookings")
-      .select("*, vehicles(*)") // JOIN ke tabel kendaraan
+      .select("*, vehicles(*)")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false });
 
@@ -33,7 +33,7 @@ export default function Profile() {
 
   return (
     <div className="max-w-5xl mx-auto p-4 mt-20">
-      {/* User Info */}
+
       <h1 className="text-3xl font-bold mb-4">Profil Saya</h1>
 
       <div className="bg-white rounded-xl shadow p-5 mb-8">
@@ -44,7 +44,6 @@ export default function Profile() {
         <p><strong>User ID:</strong> {user.id}</p>
       </div>
 
-      {/* Booking History */}
       <h2 className="text-2xl font-bold mb-4">Riwayat Pemesanan</h2>
 
       {loading ? (
@@ -56,14 +55,12 @@ export default function Profile() {
           {bookings.map((b) => (
             <div key={b.id} className="bg-white rounded-xl shadow p-4 flex gap-4">
 
-              {/* Vehicle Image */}
               <img
                 src={b.vehicles.image_url}
                 alt={b.vehicles.name}
                 className="w-32 h-24 object-cover rounded-md"
               />
 
-              {/* Text */}
               <div>
                 <h3 className="text-lg font-semibold">{b.vehicles.name}</h3>
 
@@ -90,6 +87,7 @@ export default function Profile() {
                   </span>
                 </p>
               </div>
+
             </div>
           ))}
         </div>

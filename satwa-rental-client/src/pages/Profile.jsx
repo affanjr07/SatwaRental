@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import supabase from "../config/supabase.js";
+import supabase from "../../../backend/config/supabase.js";
 import { useAuth } from "../context/AuthContext";
 
 export default function Profile() {

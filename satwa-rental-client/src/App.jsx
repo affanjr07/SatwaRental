@@ -10,6 +10,8 @@ import About from "./pages/About.jsx";
 import Booking from "./pages/Booking.jsx";
 import Terms from "./pages/Terms.jsx";
 
+import Profile from "./pages/Profile.jsx";  // ✅ Tambahan
+
 import Nav from "./components/Nav.jsx";
 import PrivateRoute from "./components/PrivateRoute.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
@@ -20,6 +22,7 @@ export default function App() {
       <BrowserRouter>
         <Nav />
         <Routes>
+
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/vehicles" element={<Vehicles />} />
@@ -30,6 +33,15 @@ export default function App() {
           <Route path="/register" element={<Register />} />
 
           {/* Protected Routes */}
+          <Route
+            path="/profile"
+            element={
+              <PrivateRoute>
+                <Profile />
+              </PrivateRoute>
+            }
+          />
+
           <Route
             path="/admin"
             element={

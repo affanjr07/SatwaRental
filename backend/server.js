@@ -17,5 +17,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/vehicles", vehicleRoutes);
 
-// Export untuk Vercel (WAJIB)
-export default app;
+// --- FIX untuk Vercel ---
+export default function handler(req, res) {
+  app(req, res); // biar Express jalan di serverless
+}

@@ -1,25 +1,21 @@
 import express from "express";
 import cors from "cors";
+import authRoutes from "./routes/authRoutes.js";
+import vehicleRoutes from "./routes/vehicleRoutes.js";
 
 const app = express();
 
 app.use(cors({
-  origin: ["https://satwa-rental.vercel.app"],
+  origin: "https://satwa-rental.vercel.app",
   methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"]
+  allowedHeaders: ["Content-Type", "Authorization"],
 }));
 
 app.use(express.json());
 
-// ---- ROUTES ----
-import authRoutes from "./routes/authRoutes.js";
-import vehicleRoutes from "./routes/vehicleRoutes.js";
-
+// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/vehicles", vehicleRoutes);
 
-// IMPORTANT: Hapus app.listen()!
-// Vercel tidak menggunakan server.listen
-// Kamu harus export default handler
-
+// Export untuk Vercel (WAJIB)
 export default app;

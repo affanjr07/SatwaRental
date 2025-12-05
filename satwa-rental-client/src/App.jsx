@@ -9,7 +9,6 @@ import Admin from "./pages/Admin.jsx";
 import About from "./pages/About.jsx";
 import Booking from "./pages/Booking.jsx";
 import Terms from "./pages/Terms.jsx";
-import Profile from "./pages/Profile.jsx"; // ← Tambahan
 
 import Nav from "./components/Nav.jsx";
 import PrivateRoute from "./components/PrivateRoute.jsx";
@@ -48,16 +47,7 @@ export default function App() {
               </PrivateRoute>
             }
           />
-
-          {/* Profile Route */}
-          <Route
-            path="/profile"
-            element={
-              <PrivateRoute>
-                <Profile />
-              </PrivateRoute>
-            }
-          />
+          
         </Routes>
       </BrowserRouter>
     </AuthProvider>

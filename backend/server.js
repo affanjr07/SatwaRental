@@ -13,19 +13,17 @@ const corsOptions = {
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
 };
-app.use("/api/users", userRoutes);
 
-// Middleware CORS
+// CORS dulu (WAJIB)
 app.use(cors(corsOptions));
-
-// Vercel requires explicit OPTIONS handler
 app.options("*", cors(corsOptions));
 
 app.use(express.json());
 
-// Routes
+// === ROUTES ===
 app.use("/api/auth", authRoutes);
 app.use("/api/vehicles", vehicleRoutes);
+app.use("/api/users", userRoutes);
 
 // === FIX UNTUK VERCEL ===
 export default function handler(req, res) {

@@ -1,16 +1,10 @@
 import express from "express";
-import supabase from "../config/supabase.js";
+import { getUsers } from "../controllers/userController.js";
+import { authMiddleware, adminOnly } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
-  const { data, error } = await supabase
-    .from("users")
-    .select("id, username, email, role");
-
-  if (error) return res.status(400).json({ msg: error.message });
-
-  return res.json(data);
-});
+// Hanya admin bisa akses daftar user
+router.get("/", authMiddleware, adminOnly, getUsers);
 
 export default router;

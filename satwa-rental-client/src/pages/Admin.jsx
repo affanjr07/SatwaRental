@@ -8,12 +8,16 @@ export default function Admin() {
   useEffect(() => {
     async function fetchUsers() {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users`, {
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
+        });
+
         const data = await res.json();
 
-        if (!res.ok) {
-          throw new Error(data.message || "Failed to fetch users");
-        }
+        if (!res.ok) throw new Error(data.msg || "Failed to fetch users");
 
         setUsers(data);
       } catch (err) {
@@ -37,15 +41,17 @@ export default function Admin() {
         <thead>
           <tr className="bg-gray-100">
             <th className="border p-2">Email</th>
-            <th className="border p-2">Name</th>
+            <th className="border p-2">Username</th>
+            <th className="border p-2">Role</th>
           </tr>
         </thead>
 
         <tbody>
-          {users.map((u, i) => (
-            <tr key={i}>
+          {users.map((u) => (
+            <tr key={u.id}>
               <td className="border p-2">{u.email}</td>
-              <td className="border p-2">{u.name}</td>
+              <td className="border p-2">{u.username}</td>
+              <td className="border p-2">{u.role}</td>
             </tr>
           ))}
         </tbody>

@@ -36,6 +36,15 @@ export default function Booking() {
     return <p className="pt-24 text-center text-lg">Memuat data kendaraan...</p>;
   }
 
+  // 🔥 Convert specification string → bullet list otomatis
+  const specs =
+    typeof vehicle.specification === "string"
+      ? vehicle.specification
+          .split(/,|\n|;/) // pisah pakai koma / enter
+          .map((s) => s.trim())
+          .filter((s) => s.length > 0)
+      : [];
+
   return (
     <div className="pt-24 pb-16 container mx-auto px-6">
       <h1 className="text-3xl font-bold mb-6 text-center">Form Pemesanan</h1>
@@ -46,24 +55,33 @@ export default function Booking() {
         <div className="bg-white shadow-lg rounded-xl p-6">
           <h2 className="text-xl font-semibold mb-4">Kendaraan Dipilih</h2>
 
-          <img
-            src={vehicle.image_url}
-            alt={vehicle.name}
-            className="w-full h-56 object-cover rounded-lg mb-4 bg-gray-200"
-          />
+          {/* 🔥 Gambar lebih kecil & jernih */}
+          <div className="w-full flex justify-center">
+            <img
+              src={vehicle.image_url}
+              alt={vehicle.name}
+              className="rounded-lg object-cover shadow-md"
+              style={{
+                width: "340px",
+                height: "230px",
+                objectFit: "cover",
+                imageRendering: "high-quality",
+              }}
+            />
+          </div>
 
-          <h3 className="text-2xl font-bold">{vehicle.name}</h3>
+          <h3 className="text-2xl font-bold mt-4">{vehicle.name}</h3>
           <p className="text-gray-600">{vehicle.type}</p>
           <p className="text-blue-600 font-semibold text-lg mt-2">
             Rp {vehicle.price_per_day.toLocaleString()}/hari
           </p>
 
-          {/* SPESIFIKASI */}
-          {vehicle.specification?.length > 0 && (
+          {/* 🔥 SPESIFIKASI STRING */}
+          {specs.length > 0 && (
             <div className="mt-4">
               <h4 className="font-semibold mb-1">Spesifikasi:</h4>
               <ul className="list-disc ml-5 text-gray-600 space-y-1">
-                {vehicle.specification.map((sp, i) => (
+                {specs.map((sp, i) => (
                   <li key={i}>{sp}</li>
                 ))}
               </ul>
@@ -95,6 +113,7 @@ export default function Booking() {
             />
           </div>
 
+          {/* RINGKASAN */}
           <div className="mt-6 p-4 bg-gray-50 border rounded-lg">
             <h3 className="font-bold text-lg mb-2">Ringkasan Pemesanan</h3>
 
@@ -104,7 +123,7 @@ export default function Booking() {
 
             <hr className="my-3" />
 
-            <p className="text-xl font-bold">
+            <p className="text-xl font-bold text-green-600">
               Total: Rp {totalHarga.toLocaleString()}
             </p>
           </div>

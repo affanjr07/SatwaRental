@@ -58,12 +58,12 @@ export default function Terms() {
           </p>
 
           <p>
-            Mobil boleh dibawa keluar Bali dengan izin khusus. Tanpa izin dikenakan denda
+            Mobil boleh dibawa keluar Medan dengan izin khusus. Tanpa izin dikenakan denda
             Rp 5.000.000.
           </p>
 
           <p>
-            Harga sopir tidak mencakup rute luar kota tertentu (Kintamani, Bali Timur, dll).
+            Harga sopir tidak mencakup rute luar kota tertentu (Aceh, Padang, Medan, Jambi, Riau).
           </p>
 
           <p>

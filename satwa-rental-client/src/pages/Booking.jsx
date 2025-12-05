@@ -1,56 +1,49 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 
 export default function Booking() {
-  const [vehicles, setVehicles] = useState([]);
-  const [selectedId, setSelectedId] = useState("");
+  const { id } = useParams(); // <--- ID dari URL
+  const [vehicle, setVehicle] = useState(null);
   const [tanggalMulai, setTanggalMulai] = useState("");
   const [tanggalSelesai, setTanggalSelesai] = useState("");
   const [totalHarga, setTotalHarga] = useState("");
 
   useEffect(() => {
-    const load = async () => {
+    const loadVehicle = async () => {
       const API = import.meta.env.VITE_API_URL;
 
-      const res = await fetch(`${API}/api/vehicles`);
-
+      const res = await fetch(`${API}/api/vehicles/${id}`);
       const data = await res.json();
-      setVehicles(data);
-
-      // Jika user klik BOOK
-      const selected = localStorage.getItem("selected_vehicle");
-      if (selected) {
-        const parsed = JSON.parse(selected);
-        setSelectedId(parsed.id);
-      }
+      setVehicle(data);
     };
 
-    load();
-  }, []);
+    loadVehicle();
+  }, [id]);
 
   useEffect(() => {
-    const kendaraan = vehicles.find((v) => v.id == selectedId);
-    if (!kendaraan || !tanggalMulai || !tanggalSelesai) return;
+    if (!vehicle || !tanggalMulai || !tanggalSelesai) return;
 
     const mulai = new Date(tanggalMulai);
     const selesai = new Date(tanggalSelesai);
     const hari = Math.ceil((selesai - mulai) / (1000 * 3600 * 24));
 
     if (hari > 0) {
-      setTotalHarga((kendaraan.price_per_day * hari).toLocaleString());
+      setTotalHarga((vehicle.price_per_day * hari).toLocaleString());
     } else {
       setTotalHarga("");
     }
-  }, [selectedId, tanggalMulai, tanggalSelesai, vehicles]);
+  }, [tanggalMulai, tanggalSelesai, vehicle]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!selectedId || !tanggalMulai || !tanggalSelesai || !totalHarga) {
+
+    if (!tanggalMulai || !tanggalSelesai || !totalHarga) {
       alert("Lengkapi semua data!");
       return;
     }
 
     const bookingData = {
-      vehicle_id: selectedId,
+      vehicle_id: id,
       tanggal_mulai: tanggalMulai,
       tanggal_selesai: tanggalSelesai,
       total_harga: totalHarga.replace(/\./g, ""),
@@ -58,10 +51,10 @@ export default function Booking() {
 
     console.log("Booking:", bookingData);
     alert("Booking berhasil (simulasi).");
-
-    localStorage.removeItem("selected_vehicle");
     window.location.href = "/";
   };
+
+  if (!vehicle) return <div className="p-10 text-center">Memuat...</div>;
 
   return (
     <div className="bg-gray-100 text-gray-800 min-h-screen flex flex-col">
@@ -70,24 +63,12 @@ export default function Booking() {
           Form Pemesanan Kendaraan
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block mb-1">Pilih Kendaraan</label>
-            <select
-              className="w-full border px-4 py-2 rounded"
-              required
-              value={selectedId}
-              onChange={(e) => setSelectedId(e.target.value)}
-            >
-              <option value="">-- Pilih Kendaraan --</option>
-              {vehicles.map((v) => (
-                <option key={v.id} value={v.id}>
-                  {v.name} - Rp {v.price_per_day.toLocaleString()}/hari
-                </option>
-              ))}
-            </select>
-          </div>
+        <div className="mb-4 p-4 bg-blue-100 rounded-lg">
+          <h3 className="text-xl font-semibold">{vehicle.name}</h3>
+          <p>Harga per hari: Rp {vehicle.price_per_day.toLocaleString()}</p>
+        </div>
 
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid md:grid-cols-2 gap-4">
             <div>
               <label className="block mb-1">Tanggal Mulai</label>

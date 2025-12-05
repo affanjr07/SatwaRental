@@ -15,6 +15,13 @@ export default function Vehicles() {
       try {
         const res = await fetch(`${API}/api/vehicles`);
         const data = await res.json();
+
+        // Validasi data kendaraan
+        if (!Array.isArray(data)) {
+          console.error("Data kendaraan tidak valid:", data);
+          return;
+        }
+
         setVehicles(data);
       } catch (err) {
         console.error("Fetch vehicle error:", err);
@@ -25,15 +32,21 @@ export default function Vehicles() {
   }, []);
 
   const handleBook = (v) => {
+    if (!v || !v.id) {
+      alert("Error: Kendaraan tidak memiliki ID!");
+      return;
+    }
+
     if (!user) {
       alert("Silakan login sebelum melakukan pemesanan.");
       nav("/login");
       return;
     }
 
+    // Simpan data sementara (opsional)
     localStorage.setItem("selected_vehicle", JSON.stringify(v));
 
-    // ⬇⬇ FIX UTAMA HARUS ADA ID
+    // Arahkan ke Booking yang benar
     nav(`/booking/${v.id}`);
   };
 
@@ -42,9 +55,15 @@ export default function Vehicles() {
       <h1 className="text-center text-3xl font-bold mb-10">Daftar Kendaraan</h1>
 
       <div className="container mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-6">
-        {vehicles.map((v) => (
-          <VehicleCard key={v.id} v={v} onBook={handleBook} />
-        ))}
+        {vehicles.length === 0 ? (
+          <p className="text-center col-span-3 text-gray-500">
+            Tidak ada kendaraan tersedia.
+          </p>
+        ) : (
+          vehicles.map((v) => (
+            <VehicleCard key={v.id} v={v} onBook={handleBook} />
+          ))
+        )}
       </div>
     </div>
   );

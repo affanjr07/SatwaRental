@@ -31,10 +31,9 @@ export default function Vehicles() {
       return;
     }
 
-    // Simpan ke localStorage sebagai cadangan
     localStorage.setItem("selected_vehicle", JSON.stringify(v));
 
-    // Arahkan ke halaman booking dengan ID kendaraan
+    // ⬇⬇ FIX UTAMA HARUS ADA ID
     nav(`/booking/${v.id}`);
   };
 

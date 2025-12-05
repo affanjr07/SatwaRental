@@ -1,13 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, Copy } from "lucide-react";
-
-import danaLogo from "../assets/payments/dana.png";
-import gopayLogo from "../assets/payments/gopay.png";
-import shopeeLogo from "../assets/payments/shopeepay.png";
-import qrisLogo from "../assets/payments/qris.png";
-import bcaLogo from "../assets/payments/bca.png";
-import briLogo from "../assets/payments/bri.png";
+import { qris_image } from "../assets/qris_image.png";
 
 export default function Payment() {
   const [openCategory, setOpenCategory] = useState(null);
@@ -18,76 +12,113 @@ export default function Payment() {
     ewallet: {
       label: "E-Wallet",
       methods: {
-        dana: { label: "Dana", number: "0895-1234-5678", logo: danaLogo },
-        gopay: { label: "GoPay", number: "0812-9876-5432", logo: gopayLogo },
-        shopeepay: { label: "ShopeePay", number: "0857-4444-2222", logo: shopeeLogo },
-        qris: { label: "QRIS", number: "SCAN QR", logo: qrisLogo },
+        dana: {
+          label: "Dana",
+          number: "081293735336",
+          logo: "https://seeklogo.com/images/D/dana-logo-8601D8801B-seeklogo.com.png",
+        },
+        gopay: {
+          label: "GoPay",
+          number: "081293735336",
+          logo: "https://seeklogo.com/images/G/gopay-logo-681C0C73E6-seeklogo.com.png",
+        },
+        shopeepay: {
+          label: "ShopeePay",
+          number: "081293735336",
+          logo: "https://cdn.worldvectorlogo.com/logos/shopeepay-2.svg",
+        },
+        qris: {
+          label: "QRIS",
+          number: "SCAN QR",
+          logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/QRIS_logo.svg/2560px-QRIS_logo.svg.png",
+          qris_image:
+            "qris_image",
+        },
       },
     },
+
     bank: {
       label: "Bank Transfer",
       methods: {
-        bca: { label: "Bank BCA", number: "1234567890", logo: bcaLogo },
-        bri: { label: "Bank BRI", number: "0900123456", logo: briLogo },
+        mandiri: {
+          label: "Bank Mandiri",
+          number: "1200012345678",
+          logo: "https://seeklogo.com/images/B/bank-mandiri-logo-5FC3084148-seeklogo.com.png",
+        },
+        bca: {
+          label: "Bank BCA",
+          number: "1234567890",
+          logo: "https://seeklogo.com/images/B/BCA-logo-99461D1F6F-seeklogo.com.png",
+        },
+        bri: {
+          label: "Bank BRI",
+          number: "0900123456",
+          logo: "https://seeklogo.com/images/B/bri-bank-rakyat-indonesia-logo-40A62F66F0-seeklogo.com.png",
+        },
       },
     },
   };
 
   const copyText = (text, key) => {
+    if (text === "SCAN QR") return;
     navigator.clipboard.writeText(text);
     setCopied(key);
-
-    setTimeout(() => setCopied(""), 1500);
+    setTimeout(() => setCopied(""), 1400);
   };
 
   return (
-    <div className="max-w-xl mx-auto mt-10 p-5">
-      <h1 className="text-3xl font-extrabold mb-6 text-center bg-gradient-to-r from-blue-500 to-purple-600 text-transparent bg-clip-text">
+    <div className="max-w-xl mx-auto mt-12 p-4">
+
+      {/* TITLE */}
+      <h1 className="text-4xl font-extrabold text-center mb-8 bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent drop-shadow-sm">
         Metode Pembayaran
       </h1>
 
-      {Object.entries(paymentData).map(([key, cat]) => (
-        <div key={key} className="mb-4">
+      {/* Payment Categories */}
+      {Object.entries(paymentData).map(([catKey, cat]) => (
+        <div key={catKey} className="mb-5">
 
           {/* CATEGORY BUTTON */}
           <button
-            onClick={() =>
-              setOpenCategory(openCategory === key ? null : key)
-            }
-            className="w-full bg-white shadow-lg border p-4 rounded-2xl font-semibold text-left hover:bg-gray-50 duration-200 flex justify-between items-center"
+            onClick={() => setOpenCategory(openCategory === catKey ? null : catKey)}
+            className="w-full bg-white p-5 rounded-2xl shadow-lg hover:shadow-xl duration-200 
+                       flex justify-between items-center font-semibold border"
           >
-            {cat.label}
-            <span>{openCategory === key ? "▲" : "▼"}</span>
+            <span>{cat.label}</span>
+            <span className="text-xl">{openCategory === catKey ? "▲" : "▼"}</span>
           </button>
 
           {/* CATEGORY DROPDOWN */}
           <AnimatePresence>
-            {openCategory === key && (
+            {openCategory === catKey && (
               <motion.div
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
-                className="overflow-hidden"
+                className="overflow-hidden pl-2"
               >
-                <div className="mt-3 flex flex-col gap-3 pl-2">
+                <div className="mt-4 space-y-3">
 
                   {Object.entries(cat.methods).map(([methodKey, method]) => (
                     <div key={methodKey}>
-                      
-                      {/* METHOD BUTTON */}
+
+                      {/* PAYMENT METHOD BUTTON */}
                       <button
                         onClick={() =>
-                          setOpenMethod(
-                            openMethod === methodKey ? null : methodKey
-                          )
+                          setOpenMethod(openMethod === methodKey ? null : methodKey)
                         }
-                        className="w-full bg-white shadow-md hover:shadow-lg border rounded-xl p-3 flex items-center gap-3 duration-200"
+                        className="w-full flex items-center gap-4 bg-white shadow-md hover:shadow-lg 
+                                   rounded-2xl border p-4 duration-200"
                       >
-                        <img src={method.logo} alt="" className="w-10 h-10 rounded-lg" />
-                        <span className="font-medium">{method.label}</span>
+                        <img
+                          src={method.logo}
+                          className="w-12 h-12 rounded-xl object-contain"
+                          alt={method.label}
+                        />
+                        <span className="font-medium text-lg">{method.label}</span>
                       </button>
 
-                      {/* NUMBER DROPDOWN */}
+                      {/* PAYMENT METHOD DROPDOWN */}
                       <AnimatePresence>
                         {openMethod === methodKey && (
                           <motion.div
@@ -96,40 +127,39 @@ export default function Payment() {
                             exit={{ height: 0, opacity: 0 }}
                             className="overflow-hidden"
                           >
-                            <div className="bg-gray-50 border rounded-xl p-4 mt-2 shadow flex justify-between items-center">
+                            <div className="bg-gray-50 border rounded-2xl p-4 shadow-inner mt-2 flex justify-between items-center">
                               <div>
                                 <p className="text-sm text-gray-600">Nomor Pembayaran</p>
-
-                                <p className="font-mono font-bold text-lg">
-                                  {method.number}
-                                </p>
+                                <p className="font-mono font-bold text-xl">{method.number}</p>
                               </div>
 
-                              <button
-                                onClick={() => copyText(method.number, methodKey)}
-                                className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg flex items-center gap-2 duration-200"
-                              >
-                                {copied === methodKey ? (
-                                  <Check size={18} />
-                                ) : (
-                                  <Copy size={18} />
-                                )}
-                                {copied === methodKey ? "Tersalin" : "Salin"}
-                              </button>
+                              {method.number !== "SCAN QR" && (
+                                <button
+                                  onClick={() => copyText(method.number, methodKey)}
+                                  className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-xl duration-200"
+                                >
+                                  {copied === methodKey ? <Check size={18} /> : <Copy size={18} />}
+                                  {copied === methodKey ? "Tersalin" : "Salin"}
+                                </button>
+                              )}
                             </div>
 
-                            {/* QR IMAGE FOR QRIS (OPTIONAL) */}
+                            {/* QRIS QR IMAGE */}
                             {method.label === "QRIS" && (
-                              <div className="mt-3">
+                              <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="mt-4"
+                              >
                                 <img
-                                  src={method.logo}
-                                  alt="QRIS Code"
-                                  className="w-40 mx-auto rounded-lg shadow"
+                                  src={method.qris_image}
+                                  className="w-48 mx-auto shadow-md rounded-xl"
+                                  alt="QRIS"
                                 />
                                 <p className="text-center text-sm mt-2 text-gray-600">
-                                  Scan untuk membayar via QRIS
+                                  Scan QR untuk melanjutkan pembayaran
                                 </p>
-                              </div>
+                              </motion.div>
                             )}
                           </motion.div>
                         )}

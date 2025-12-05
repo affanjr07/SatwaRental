@@ -76,17 +76,18 @@ export default function Booking() {
             Rp {vehicle.price_per_day.toLocaleString()}/hari
           </p>
 
-          {/* 🔥 SPESIFIKASI STRING */}
-          {specs.length > 0 && (
-            <div className="mt-4">
-              <h4 className="font-semibold mb-1">Spesifikasi:</h4>
-              <ul className="list-disc ml-5 text-gray-600 space-y-1">
-                {specs.map((sp, i) => (
-                  <li key={i}>{sp}</li>
-                ))}
-              </ul>
-            </div>
-          )}
+{/* SPESIFIKASI */}
+{Array.isArray(vehicle.specification) && vehicle.specification.length > 0 && (
+  <div className="mt-4">
+    <h4 className="font-semibold mb-1">Spesifikasi:</h4>
+    <ul className="list-disc ml-5 text-gray-600 space-y-1">
+      {vehicle.specification.map((sp, i) => (
+        <li key={i}>{sp}</li>
+      ))}
+    </ul>
+  </div>
+)}
+
         </div>
 
         {/* FORM PEMESANAN */}

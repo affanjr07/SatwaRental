@@ -9,8 +9,7 @@ import Admin from "./pages/Admin.jsx";
 import About from "./pages/About.jsx";
 import Booking from "./pages/Booking.jsx";
 import Terms from "./pages/Terms.jsx";
-
-import Profile from "./pages/Profile.jsx";  // ✅ Tambahan
+import Profile from "./pages/Profile.jsx"; // ← Tambahan
 
 import Nav from "./components/Nav.jsx";
 import PrivateRoute from "./components/PrivateRoute.jsx";
@@ -21,27 +20,17 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <Nav />
-        <Routes>
 
+        <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/vehicles" element={<Vehicles />} />
           <Route path="/about" element={<About />} />
           <Route path="/terms" element={<Terms />} />
-
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
           {/* Protected Routes */}
-          <Route
-            path="/profile"
-            element={
-              <PrivateRoute>
-                <Profile />
-              </PrivateRoute>
-            }
-          />
-
           <Route
             path="/admin"
             element={
@@ -56,6 +45,16 @@ export default function App() {
             element={
               <PrivateRoute>
                 <Booking />
+              </PrivateRoute>
+            }
+          />
+
+          {/* Profile Route */}
+          <Route
+            path="/profile"
+            element={
+              <PrivateRoute>
+                <Profile />
               </PrivateRoute>
             }
           />

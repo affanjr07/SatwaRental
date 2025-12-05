@@ -5,6 +5,7 @@ import { useNavigate, Link } from "react-router-dom";
 export default function Login() {
   const { login } = useAuth();
   const nav = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -63,7 +64,6 @@ export default function Login() {
           </button>
         </form>
 
-        {/* Tombol Register */}
         <p className="text-center text-sm text-gray-600 mt-5">
           Belum punya akun?{" "}
           <Link to="/register" className="text-blue-600 font-semibold">

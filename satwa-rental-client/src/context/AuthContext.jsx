@@ -14,7 +14,7 @@ export function AuthProvider({ children }) {
       });
 
       const data = await res.json();
-      if (!res.ok) return { ok: false, message: data.message };
+      if (!res.ok) return { ok: false, message: data.msg };
 
       setUser(data.user);
       return { ok: true, user: data.user };
@@ -25,14 +25,14 @@ export function AuthProvider({ children }) {
 
   async function register({ username, email, password }) {
     try {
-      const res = await fetch("https://satwarental-backend.up.railway.app/api/auth/register", {
+      const res = await fetch("http://localhost:5000/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, email, password }),
       });
 
       const data = await res.json();
-      if (!res.ok) return { ok: false, message: data.message };
+      if (!res.ok) return { ok: false, message: data.msg };
 
       return { ok: true };
     } catch (error) {

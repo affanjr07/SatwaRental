@@ -1,177 +1,121 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-export default function Booking() {
-  const { id } = useParams(); // ambil ID dari URL
+const API = import.meta.env.VITE_API_URL;
 
-  const [vehicles, setVehicles] = useState([]);
-  const [selectedId, setSelectedId] = useState("");
+export default function Booking() {
+  const { id } = useParams();
+  const [vehicle, setVehicle] = useState(null);
   const [tanggalMulai, setTanggalMulai] = useState("");
   const [tanggalSelesai, setTanggalSelesai] = useState("");
-  const [totalHarga, setTotalHarga] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [totalHarga, setTotalHarga] = useState(0);
 
-  const API = import.meta.env.VITE_API_URL;
-
-  // ==========================
-  // FETCH KENDARAAN
-  // ==========================
   useEffect(() => {
-    const load = async () => {
-      try {
-        const res = await fetch(`${API}/api/vehicles`);
-        const data = await res.json();
-
-        console.log("Fetch vehicles response:", data);
-
-        setVehicles(data);
-
-        // Auto pilih kendaraan dari URL
-        if (id) {
-          setSelectedId(String(id));  // FIX: convert ke string
-        } else {
-          // Jika datang dari button BOOK tanpa id
-          const saved = localStorage.getItem("selected_vehicle");
-          if (saved) {
-            const parsed = JSON.parse(saved);
-            setSelectedId(String(parsed.id)); // FIX
-          }
-        }
-      } catch (err) {
-        console.error("Error fetch vehicles:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    load();
+    fetch(`${API}/api/vehicles/${id}`)
+      .then((r) => r.json())
+      .then((data) => setVehicle(data))
+      .catch((err) => console.error("Gagal ambil kendaraan:", err));
   }, [id]);
 
-  // ==========================
-  // HITUNG TOTAL HARGA
-  // ==========================
+  // Hitung total harga berdasarkan tanggal
   useEffect(() => {
-    const kendaraan = vehicles.find((v) => String(v.id) === String(selectedId));
-    if (!kendaraan || !tanggalMulai || !tanggalSelesai) return;
+    if (!vehicle || !tanggalMulai || !tanggalSelesai) return;
 
-    const mulai = new Date(tanggalMulai);
-    const selesai = new Date(tanggalSelesai);
+    const start = new Date(tanggalMulai);
+    const end = new Date(tanggalSelesai);
 
-    const hari = Math.ceil((selesai - mulai) / (1000 * 3600 * 24));
-
-    if (hari > 0) {
-      setTotalHarga((kendaraan.price_per_day * hari).toLocaleString());
-    } else {
-      setTotalHarga("");
-    }
-  }, [selectedId, tanggalMulai, tanggalSelesai, vehicles]);
-
-  // ==========================
-  // SUBMIT BOOKING (SIMULASI)
-  // ==========================
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (!selectedId || !tanggalMulai || !tanggalSelesai || !totalHarga) {
-      alert("Lengkapi semua data!");
+    if (end < start) {
+      setTotalHarga(0);
       return;
     }
 
-    const bookingData = {
-      vehicle_id: selectedId,
-      tanggal_mulai: tanggalMulai,
-      tanggal_selesai: tanggalSelesai,
-      total_harga: totalHarga.replace(/\./g, "")
-    };
+    const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+    setTotalHarga(days * vehicle.price_per_day);
+  }, [tanggalMulai, tanggalSelesai, vehicle]);
 
-    console.log("Booking:", bookingData);
-    alert("Booking berhasil! (Simulasi)");
-
-    localStorage.removeItem("selected_vehicle");
-    window.location.href = "/";
-  };
-
-  // ==========================
-  // LOADING STATE
-  // ==========================
-  if (loading) {
-    return (
-      <div className="min-h-screen flex justify-center items-center text-xl">
-        Memuat data kendaraan...
-      </div>
-    );
+  if (!vehicle) {
+    return <p className="pt-24 text-center text-lg">Memuat data kendaraan...</p>;
   }
 
   return (
-    <div className="bg-gray-100 text-gray-800 min-h-screen flex flex-col">
-      <main className="flex-1 max-w-3xl mx-auto mt-10 bg-white shadow-md rounded-2xl p-8">
-        <h2 className="text-3xl font-bold text-center text-blue-600 mb-6">
-          Form Pemesanan Kendaraan
-        </h2>
+    <div className="pt-24 pb-16 container mx-auto px-6">
+      <h1 className="text-3xl font-bold mb-6 text-center">Form Pemesanan</h1>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* PILIH KENDARAAN */}
-          <div>
-            <label className="block mb-1">Pilih Kendaraan</label>
-            <select
-              className="w-full border px-4 py-2 rounded"
-              required
-              value={selectedId}
-              onChange={(e) => setSelectedId(e.target.value)}
-            >
-              <option value="">-- Pilih Kendaraan --</option>
-              {vehicles.map((v) => (
-                <option key={v.id} value={String(v.id)}>
-                  {v.name} - Rp {v.price_per_day.toLocaleString()}/hari
-                </option>
-              ))}
-            </select>
-          </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
 
-          {/* TANGGAL */}
-          <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <label className="block mb-1">Tanggal Mulai</label>
-              <input
-                type="date"
-                className="w-full border px-4 py-2 rounded"
-                required
-                value={tanggalMulai}
-                onChange={(e) => setTanggalMulai(e.target.value)}
-              />
+        {/* ▌ KENDARAAN DIPILIH */}
+        <div className="bg-white shadow-lg rounded-xl p-6">
+          <h2 className="text-xl font-semibold mb-4">Kendaraan Dipilih</h2>
+
+          <img
+            src={vehicle.image_url}
+            alt={vehicle.name}
+            className="w-full h-60 object-cover rounded-lg mb-4"
+          />
+
+          <h3 className="text-2xl font-bold">{vehicle.name}</h3>
+          <p className="text-gray-600">{vehicle.type}</p>
+          <p className="text-blue-600 font-semibold text-lg mt-2">
+            Rp {vehicle.price_per_day.toLocaleString()}/hari
+          </p>
+
+          {/* Spesifikasi */}
+          {vehicle.specification?.length > 0 && (
+            <div className="mt-4">
+              <h4 className="font-semibold mb-1">Spesifikasi:</h4>
+              <ul className="list-disc ml-5 text-gray-600">
+                {vehicle.specification.map((sp, i) => (
+                  <li key={i}>{sp}</li>
+                ))}
+              </ul>
             </div>
+          )}
+        </div>
 
-            <div>
-              <label className="block mb-1">Tanggal Selesai</label>
-              <input
-                type="date"
-                className="w-full border px-4 py-2 rounded"
-                required
-                value={tanggalSelesai}
-                onChange={(e) => setTanggalSelesai(e.target.value)}
-              />
-            </div>
-          </div>
+        {/* ▌ FORM PEMESANAN */}
+        <div className="bg-white shadow-lg rounded-xl p-6">
+          <h2 className="text-xl font-semibold mb-4">Isi Data Pemesanan</h2>
 
-          {/* TOTAL HARGA */}
-          <div>
-            <label className="block mb-1">Total Harga</label>
+          <div className="mb-4">
+            <label className="font-medium block mb-1">Tanggal Mulai</label>
             <input
-              type="text"
-              readOnly
-              className="w-full border px-4 py-2 bg-gray-100 rounded"
-              value={totalHarga}
+              type="date"
+              className="border p-2 w-full rounded"
+              value={tanggalMulai}
+              onChange={(e) => setTanggalMulai(e.target.value)}
             />
           </div>
 
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-          >
-            Konfirmasi Booking
+          <div className="mb-4">
+            <label className="font-medium block mb-1">Tanggal Selesai</label>
+            <input
+              type="date"
+              className="border p-2 w-full rounded"
+              value={tanggalSelesai}
+              onChange={(e) => setTanggalSelesai(e.target.value)}
+            />
+          </div>
+
+          {/* ▌ RINGKASAN PEMESANAN */}
+          <div className="mt-6 p-4 bg-gray-50 border rounded-lg">
+            <h3 className="font-bold text-lg mb-2">Ringkasan Pemesanan</h3>
+
+            <p><strong>Kendaraan:</strong> {vehicle.name}</p>
+            <p><strong>Tanggal:</strong> {tanggalMulai || "-"} sampai {tanggalSelesai || "-"}</p>
+            <p><strong>Harga/Hari:</strong> Rp {vehicle.price_per_day.toLocaleString()}</p>
+
+            <hr className="my-3" />
+
+            <p className="text-xl font-bold">
+              Total: Rp {totalHarga.toLocaleString()}
+            </p>
+          </div>
+
+          <button className="mt-5 w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700">
+            Konfirmasi Pesanan
           </button>
-        </form>
-      </main>
+        </div>
+      </div>
     </div>
   );
 }

@@ -8,50 +8,74 @@ export default function VehicleCard({ v }) {
   const [message, setMessage] = useState("");
 
   const handleBook = () => {
+    setMessage("");
+
     if (!user) {
-      setMessage("Silakan login terlebih dahulu!");
-      setTimeout(() => nav("/login"), 900);
+      setMessage("Silakan login terlebih dahulu untuk menyewa kendaraan!");
+      setTimeout(() => nav("/login"), 800);
       return;
     }
 
+    if (!v.id) {
+      alert("Kendaraan tidak memiliki ID! Periksa database Supabase.");
+      return;
+    }
+
+    // simpan sementara
     localStorage.setItem("selected_vehicle", JSON.stringify(v));
+
+    // arahkan ke booking
     nav(`/booking/${v.id}`);
   };
 
-  const price = v.price_per_day ?? v.harga ?? 0;
-  const nama = v.name ?? v.nama ?? "Unknown";
-  const jenis = v.type ?? v.jenis ?? "-";
-  const gambar = v.image_url ?? v.gambar ?? "";
-  const spesifikasi = v.spesifikasi || []; // <-- spesifikasi array
+  // Fix data agar kompatibel dengan semua format Supabase/API
+  const nama = v.nama ?? v.name ?? "Tanpa Nama";
+  const jenis = v.jenis ?? v.type ?? "Tidak diketahui";
+  const harga = v.harga ?? v.price_per_day ?? v.pricePerDay ?? 0;
+  const gambar = v.gambar ?? v.image_url ?? v.image ?? "";
+  const spesifikasi = Array.isArray(v.spesifikasi ?? v.specification ?? [])
+    ? (v.spesifikasi || v.specification)
+    : [];
 
   return (
-    <div className="bg-white shadow-lg rounded-2xl overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1">
-      <img src={gambar} className="w-full h-56 object-cover" />
+    <div className="bg-white shadow-md rounded-xl overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-xl">
+      
+      {/* Gambar kendaraan */}
+      <img
+        src={gambar}
+        alt={nama}
+        className="w-full h-48 object-cover bg-gray-200"
+      />
 
-      <div className="p-5">
-        <h4 className="text-xl font-semibold">{nama}</h4>
-        <p className="text-gray-500 text-sm mb-2">{jenis}</p>
+      <div className="p-4">
+        {/* Nama & jenis */}
+        <h4 className="text-lg font-semibold">{nama}</h4>
+        <p className="text-sm text-gray-500 mb-2">{jenis}</p>
 
-        <p className="text-blue-600 font-bold mb-4 text-lg">
-          Rp {Number(price).toLocaleString()}/hari
+        {/* Harga */}
+        <p className="text-blue-600 font-bold mb-3">
+          Rp {Number(harga).toLocaleString()}/hari
         </p>
 
+        {/* Spesifikasi */}
         {spesifikasi.length > 0 && (
-          <ul className="mb-4 text-sm text-gray-600 space-y-1">
-            {spesifikasi.map((sp, i) => (
-              <li key={i} className="flex gap-2">
-                <span>•</span>
-                <span>{sp}</span>
+          <ul className="text-sm text-gray-700 mb-4 space-y-1">
+            {spesifikasi.map((item, idx) => (
+              <li key={idx} className="flex items-start gap-2">
+                <span className="text-blue-500">•</span>
+                <span>{item}</span>
               </li>
             ))}
           </ul>
         )}
 
-        {message && <p className="text-red-500 text-sm mb-2">{message}</p>}
+        {/* Pesan error (belum login) */}
+        {message && <p className="text-red-600 text-sm mb-3">{message}</p>}
 
+        {/* Tombol sewa */}
         <button
           onClick={handleBook}
-          className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
+          className="block w-full text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
         >
           Sewa Sekarang
         </button>

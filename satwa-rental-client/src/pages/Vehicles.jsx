@@ -69,7 +69,7 @@ export default function Vehicles() {
         <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 px-6">
           {filteredVehicles.length === 0 ? (
             <p className="text-center col-span-3 text-gray-500 text-lg">
-              Tidak ada kendaraan yang cocok dengan pencarian.
+              Memuat Daftar Kendaraan.
             </p>
           ) : (
             filteredVehicles.map((v) => (

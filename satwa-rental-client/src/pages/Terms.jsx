@@ -50,9 +50,36 @@ export default function Terms() {
       </div>
 
       {/* FOOTER */}
-      <footer className="text-center mt-16 text-gray-500 text-sm">
-        <p>© {new Date().getFullYear()} SatwaRental — Semua Hak Dilindungi.</p>
-        <p className="mt-1">Medan, Indonesia</p>
+      <footer className="bg-gray-900 text-white py-10 mt-20">
+        <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-10 text-center md:text-left">
+
+          <div>
+            <h3 className="text-2xl font-bold mb-3">SatwaRental</h3>
+            <p className="text-gray-300">
+              Platform rental mobil & motor terpercaya dengan harga terbaik dan layanan 24 jam.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="text-xl font-semibold mb-3">Menu</h4>
+            <ul className="space-y-2 text-gray-300">
+              <li><Link to="/" className="hover:text-white">Home</Link></li>
+              <li><Link to="/vehicles" className="hover:text-white">Kendaraan</Link></li>
+              <li><Link to="/about" className="hover:text-white">Tentang Kami</Link></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-xl font-semibold mb-3">Kontak</h4>
+            <p className="text-gray-300">📍 Medan, Sumatera Utara</p>
+            <p className="text-gray-300">☎ 0821-6691-9100</p>
+            <p className="text-gray-300">✉ satwarental@gmail.com</p>
+          </div>
+        </div>
+
+        <p className="text-center text-gray-400 mt-8">
+          © {new Date().getFullYear()} SatwaRental — All Rights Reserved
+        </p>
       </footer>
     </div>
   );

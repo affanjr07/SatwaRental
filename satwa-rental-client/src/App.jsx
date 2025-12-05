@@ -9,6 +9,7 @@ import Admin from "./pages/Admin.jsx";
 import About from "./pages/About.jsx";
 import Booking from "./pages/Booking.jsx";
 import Terms from "./pages/Terms.jsx";
+import Payment from "./pages/Payment.jsx";
 
 import Nav from "./components/Nav.jsx";
 import PrivateRoute from "./components/PrivateRoute.jsx";
@@ -47,7 +48,12 @@ export default function App() {
               </PrivateRoute>
             }
           />
-          
+
+          <Routes>
+            <Route path="/payment" element={<Payment />} />
+          </Routes>
+
+
         </Routes>
       </BrowserRouter>
     </AuthProvider>

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, Copy } from "lucide-react";
-import { qris_image } from "../assets/qris_image.png";
+import qris_image from "../assets/qris_image.png";
 
 export default function Payment() {
   const [openCategory, setOpenCategory] = useState(null);
@@ -32,7 +32,7 @@ export default function Payment() {
           number: "SCAN QR",
           logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/QRIS_logo.svg/2560px-QRIS_logo.svg.png",
           qris_image:
-            "qris_image",
+            qris_image,
         },
       },
     },

@@ -37,7 +37,7 @@ export default function Booking() {
     return <p className="pt-24 text-center text-lg">Memuat data kendaraan...</p>;
   }
 
-  // 🔥 Convert specification string → array otomatis jika string
+  // 🔥 Convert specification string → array otomatis jika strin
   const specs =
     typeof vehicle.specification === "string"
       ? vehicle.specification

@@ -73,7 +73,7 @@ export default function Terms() {
             <h4 className="text-xl font-semibold mb-3">Kontak</h4>
             <p className="text-gray-300">📍 Medan, Sumatera Utara</p>
             <p className="text-gray-300">☎ 0821-6691-9100</p>
-            <p className="text-gray-300">✉ satwarental@gmail.com</p>
+            <p className="text-gray-300">✉ satwarental@gmail.co</p>
           </div>
         </div>
 

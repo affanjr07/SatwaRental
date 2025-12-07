@@ -1,4 +1,7 @@
 import React from "react";
+// Impor 'Link' dari 'react-router-dom'
+// Pastikan Anda telah menginstal 'react-router-dom' di proyek Anda
+import { Link } from "react-router-dom"; 
 
 export default function Terms() {
   return (
@@ -15,36 +18,36 @@ export default function Terms() {
         <div className="space-y-5 text-gray-700 leading-relaxed text-[15px]">
           <p>
             Untuk menyewa mobil lepas kunci, calon penyewa Warga Negara Indonesia WAJIB
-            mengirimkan foto KTP dan SIM A asli melalui WhatsApp resmi.
+            mengirimkan foto **KTP** dan **SIM A** asli melalui WhatsApp resmi.
           </p>
 
           <p>
-            Durasi sewa adalah <b>24 jam</b>. Melebihi batas waktu dikenakan biaya tambahan
-            <b> 10% per jam</b>. Lebih dari 3 jam dihitung 1 hari
+            Durasi sewa adalah **24 jam**. Melebihi batas waktu dikenakan biaya tambahan
+            **10% per jam**. Lebih dari 3 jam dihitung **1 hari**.
           </p>
 
           <p>
-            Pembayaran membutuhkan DP minimal 1x harga sewa. Sisa pembayaran saat kendaraan diterima.
+            Pembayaran membutuhkan **DP minimal 1x harga sewa**. Sisa pembayaran saat kendaraan diterima.
           </p>
 
           <p>
-            Penyewa wajib menitip uang jaminan. Jaminan dikembalikan maksimal 2×24 jam.
+            Penyewa wajib menitip **uang jaminan**. Jaminan dikembalikan maksimal 2×24 jam.
           </p>
 
-          <p>Penyewa WAJIB membuat video kondisi mobil saat serah terima.</p>
+          <p>Penyewa WAJIB membuat **video kondisi mobil** saat serah terima.</p>
 
           <p>BBM wajib dikembalikan sama seperti awal (1 kotak = Rp 50.000).</p>
 
           <p>
-            Mobil boleh keluar Medan dengan izin khusus. Tanpa izin dikenakan denda Rp 5.000.000.
+            Mobil boleh keluar Medan dengan **izin khusus**. Tanpa izin dikenakan denda **Rp 5.000.000**.
           </p>
 
-          <p>Pihak rental tidak bertanggung jawab atas barang tertinggal.</p>
+          <p>Pihak rental tidak bertanggung jawab atas **barang tertinggal**.</p>
 
-          <p>Penyewa dilarang mengganti sparepart tanpa izin.</p>
+          <p>Penyewa dilarang **mengganti sparepart** tanpa izin.</p>
 
           <p>
-            Semua pembayaran tidak dapat dikembalikan jika penyewa melanggar ketentuan.
+            Semua pembayaran **tidak dapat dikembalikan** jika penyewa melanggar ketentuan.
           </p>
         </div>
       </div>
@@ -52,7 +55,7 @@ export default function Terms() {
       {/* FOOTER */}
       <footer className="bg-gray-900 text-white py-10 mt-20">
         <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-10 text-center md:text-left">
-
+          
           <div>
             <h3 className="text-2xl font-bold mb-3">SatwaRental</h3>
             <p className="text-gray-300">
@@ -63,6 +66,7 @@ export default function Terms() {
           <div>
             <h4 className="text-xl font-semibold mb-3">Menu</h4>
             <ul className="space-y-2 text-gray-300">
+              {/* Menggunakan komponen Link */}
               <li><Link to="/" className="hover:text-white">Home</Link></li>
               <li><Link to="/vehicles" className="hover:text-white">Kendaraan</Link></li>
               <li><Link to="/about" className="hover:text-white">Tentang Kami</Link></li>

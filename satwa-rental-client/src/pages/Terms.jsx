@@ -20,7 +20,7 @@ export default function Terms() {
 
           <p>
             Durasi sewa adalah <b>24 jam</b>. Melebihi batas waktu dikenakan biaya tambahan
-            <b> 10% per jam</b>. Lebih dari 3 jam dihitung 1 hari.
+            <b> 10% per jam</b>. Lebih dari 3 jam dihitung 1 hari
           </p>
 
           <p>

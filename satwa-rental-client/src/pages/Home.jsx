@@ -1,29 +1,53 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+
+/**
+ * Home.jsx - cleaned (Option D)
+ * - useRef for progress bar
+ * - safe cleanup of intervals
+ * - Slide renders button only if btn has text
+ * - structure + formatting improved
+ */
 
 export default function Home() {
   const [index, setIndex] = useState(0);
   const total = 3;
 
-  useEffect(() => {
-    let width = 0;
-    const progress = document.getElementById("progressBar");
+  // ref for progress bar DOM element
+  const progressRef = useRef(null);
+  // store interval id to clear on unmount or index change
+  const intervalRef = useRef(null);
 
-    const interval = setInterval(() => {
-      width++;
-      if (progress) progress.style.width = width + "%";
-      if (width >= 100) nextSlide();
+  useEffect(() => {
+    // reset progress bar
+    let width = 0;
+    if (progressRef.current) progressRef.current.style.width = "0%";
+
+    // increment width every 50ms -> 100 * 50ms = 5000ms per slide
+    intervalRef.current = setInterval(() => {
+      width += 1;
+      if (progressRef.current) progressRef.current.style.width = `${width}%`;
+
+      if (width >= 100) {
+        // next slide and reset progress (will be handled by effect cleanup + re-run)
+        setIndex((prev) => (prev + 1) % total);
+      }
     }, 50);
 
-    return () => clearInterval(interval);
-  }, [index]);
+    return () => {
+      // cleanup interval when index changes or component unmounts
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [index, total]);
 
   const nextSlide = () => setIndex((prev) => (prev + 1) % total);
   const prevSlide = () => setIndex((prev) => (prev - 1 + total) % total);
 
   return (
     <div className="w-full">
-
       {/* ===== HERO SLIDER ===== */}
       <section className="relative overflow-hidden w-full">
         <div
@@ -42,8 +66,8 @@ export default function Home() {
             bg="from-indigo-600 to-purple-600"
             title="Promo Akhir Tahun"
             desc="Diskon hingga 30% untuk semua kendaraan!"
-            link="/promo"
-            btn="Lihat Promo"
+            link=""   // kosong -> tombol tidak tampil
+            btn=""    // kosong -> tombol tidak tampil
           />
 
           <Slide
@@ -52,17 +76,19 @@ export default function Home() {
             desc="Kami siap membantu kapan saja untuk kebutuhan mendadak kamu."
             link="https://wa.me/6282166919100"
             btn="Pelajari Lebih"
+            external
           />
         </div>
 
         {/* Progress Bar */}
         <div className="absolute bottom-0 left-0 w-full h-1 bg-white/30">
-          <div id="progressBar" className="h-1 bg-white w-0"></div>
+          <div ref={progressRef} className="h-1 bg-white w-0" />
         </div>
 
-        {/* Buttons */}
+        {/* Prev / Next Buttons */}
         <button
           onClick={prevSlide}
+          aria-label="Previous slide"
           className="absolute left-5 top-1/2 -translate-y-1/2 bg-white/20 backdrop-blur-md text-white border border-white/30 text-3xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/40 transition"
         >
           ‹
@@ -70,6 +96,7 @@ export default function Home() {
 
         <button
           onClick={nextSlide}
+          aria-label="Next slide"
           className="absolute right-5 top-1/2 -translate-y-1/2 bg-white/20 backdrop-blur-md text-white border border-white/30 text-3xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/40 transition"
         >
           ›
@@ -78,14 +105,12 @@ export default function Home() {
 
       {/* ===== WHY US ===== */}
       <section className="my-16 text-center">
-
         {/* FLOATING WHATSAPP BUTTON */}
         <a
           href="https://wa.me/6282166919100"
           target="_blank"
           rel="noopener noreferrer"
-          className="fixed bottom-6 right-6 bg-green-500 p-4 rounded-full shadow-xl 
-                    hover:bg-green-600 transition transform hover:scale-110"
+          className="fixed bottom-6 right-6 bg-green-500 p-4 rounded-full shadow-xl hover:bg-green-600 transition transform hover:scale-110"
         >
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
@@ -128,7 +153,6 @@ export default function Home() {
         <h2 className="text-3xl font-bold text-center mb-12">Review Pelanggan</h2>
 
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 px-6">
-
           <ReviewCard
             img="https://i.pravatar.cc/150?img=32"
             name="Rizka"
@@ -155,7 +179,6 @@ export default function Home() {
       {/* ===== FOOTER ===== */}
       <footer className="bg-gray-900 text-white py-10 mt-20">
         <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-10 text-center md:text-left">
-
           {/* Brand */}
           <div>
             <h3 className="text-2xl font-bold mb-3">Satwa Rental</h3>
@@ -168,9 +191,15 @@ export default function Home() {
           <div>
             <h4 className="text-xl font-semibold mb-3">Menu</h4>
             <ul className="space-y-2 text-gray-300">
-              <li><Link to="/" className="hover:text-white">Home</Link></li>
-              <li><Link to="/vehicles" className="hover:text-white">Kendaraan</Link></li>
-              <li><Link to="/about" className="hover:text-white">Tentang Kami</Link></li>
+              <li>
+                <Link to="/" className="hover:text-white">Home</Link>
+              </li>
+              <li>
+                <Link to="/vehicles" className="hover:text-white">Kendaraan</Link>
+              </li>
+              <li>
+                <Link to="/about" className="hover:text-white">Tentang Kami</Link>
+              </li>
             </ul>
           </div>
 
@@ -187,22 +216,37 @@ export default function Home() {
           © {new Date().getFullYear()} Satwa Rental — All Rights Reserved
         </p>
       </footer>
-
     </div>
   );
 }
 
 /* ===== SLIDE COMPONENT ===== */
-function Slide({ bg, title, desc, link, btn }) {
+function Slide({ bg, title, desc, link = "", btn = "", external = false }) {
+  const hasBtn = Boolean(btn && String(btn).trim() !== "");
+
   return (
     <div
       className={`min-w-full min-h-[400px] md:min-h-[500px] flex flex-col justify-center items-center text-white bg-gradient-to-r ${bg}`}
     >
       <h1 className="text-4xl font-bold mb-3">{title}</h1>
       <p className="text-lg mb-6">{desc}</p>
-      <Link className="bg-white text-blue-600 px-6 py-2 rounded font-bold" to={link}>
-        {btn}
-      </Link>
+
+      {hasBtn && (
+        external ? (
+          <a
+            href={link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-white text-blue-600 px-6 py-2 rounded font-bold"
+          >
+            {btn}
+          </a>
+        ) : (
+          <Link to={link} className="bg-white text-blue-600 px-6 py-2 rounded font-bold">
+            {btn}
+          </Link>
+        )
+      )}
     </div>
   );
 }
@@ -227,7 +271,7 @@ function ReviewCard({ img, name, review, rating }) {
         <div>
           <h3 className="text-xl font-semibold">{name}</h3>
           <div className="text-yellow-500 text-lg">
-            {"⭐".repeat(rating)}
+            {"⭐".repeat(Math.max(0, Math.min(5, rating || 0)))}
           </div>
         </div>
       </div>

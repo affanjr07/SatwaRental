@@ -20,7 +20,8 @@ const corsOptions = {
 
 // CORS (penting di Vercel)
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
+// change "*" to "/*"
+app.options("/*", cors(corsOptions));
 
 app.use(express.json());
 

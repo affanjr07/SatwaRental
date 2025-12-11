@@ -10,6 +10,7 @@ import About from "./pages/About.jsx";
 import Booking from "./pages/Booking.jsx";
 import Terms from "./pages/Terms.jsx";
 import Payment from "./pages/Payment.jsx";
+import Orders from "./pages/Orders.jsx"; // NEW
 
 import Nav from "./components/Nav.jsx";
 import PrivateRoute from "./components/PrivateRoute.jsx";
@@ -49,7 +50,23 @@ export default function App() {
             }
           />
 
-          <Route path="/payment" element={<Payment />} />
+          <Route
+            path="/payment"
+            element={
+              <PrivateRoute>
+                <Payment />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/orders"
+            element={
+              <PrivateRoute>
+                <Orders />
+              </PrivateRoute>
+            }
+          />
 
         </Routes>
       </BrowserRouter>

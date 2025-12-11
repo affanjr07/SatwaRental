@@ -9,6 +9,8 @@ export default function Admin() {
   const API = import.meta.env.VITE_API_URL;
 
   const [vehicles, setVehicles] = useState([]);
+  const [logs, setLogs] = useState([]);
+  const [loadingLogs, setLoadingLogs] = useState(false);
   const [form, setForm] = useState({
     id: null,
     nama: "",
@@ -19,7 +21,7 @@ export default function Admin() {
   });
 
   // ==========================
-  // FETCH KENDARAAN (VERCEL)
+  // FETCH KENDARAAN (VERCEL / LOCAL)
   // ==========================
   const loadVehicles = async () => {
     try {
@@ -28,6 +30,34 @@ export default function Admin() {
       setVehicles(data);
     } catch (err) {
       console.error("Fetch vehicles error:", err);
+    }
+  };
+
+  // ==========================
+  // FETCH LOGS (ADMIN)
+  // ==========================
+  const loadLogs = async () => {
+    setLoadingLogs(true);
+    try {
+      const res = await fetch(`${API}/api/bookings/all`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      if (!res.ok) {
+        const text = await res.text();
+        console.error("Failed load logs:", res.status, text);
+        setLogs([]);
+        setLoadingLogs(false);
+        return;
+      }
+      const data = await res.json();
+      setLogs(data || []);
+    } catch (err) {
+      console.error("Load logs error:", err);
+      setLogs([]);
+    } finally {
+      setLoadingLogs(false);
     }
   };
 
@@ -41,6 +71,8 @@ export default function Admin() {
       return;
     }
     loadVehicles();
+    loadLogs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   // ==========================
@@ -57,7 +89,7 @@ export default function Admin() {
     });
 
   // ==========================
-  // SIMPAN / UPDATE
+  // SIMPAN / UPDATE KENDARAAN
   // ==========================
   const save = async (e) => {
     e.preventDefault();
@@ -80,20 +112,25 @@ export default function Admin() {
       ? `${API}/api/vehicles/${form.id}`
       : `${API}/api/vehicles`;
 
-    const res = await fetch(endpoint, {
-      method,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify(payload)
-    });
+    try {
+      const res = await fetch(endpoint, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
 
-    const data = await res.json();
-    if (!res.ok) return alert(data.msg || "Gagal menyimpan.");
+      const data = await res.json();
+      if (!res.ok) return alert(data.msg || "Gagal menyimpan.");
 
-    loadVehicles();
-    resetForm();
+      loadVehicles();
+      resetForm();
+    } catch (err) {
+      console.error("Save vehicle error:", err);
+      alert("Server error saat menyimpan kendaraan.");
+    }
   };
 
   // ==========================
@@ -115,15 +152,77 @@ export default function Admin() {
   const remove = async (id) => {
     if (!confirm("Hapus kendaraan ini?")) return;
 
-    const res = await fetch(`${API}/api/vehicles/${id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    try {
+      const res = await fetch(`${API}/api/vehicles/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` }
+      });
 
-    const data = await res.json();
-    if (!res.ok) return alert(data.msg || "Gagal menghapus.");
+      const data = await res.json();
+      if (!res.ok) return alert(data.msg || "Gagal menghapus.");
 
-    loadVehicles();
+      loadVehicles();
+    } catch (err) {
+      console.error("Delete vehicle error:", err);
+      alert("Server error saat menghapus kendaraan.");
+    }
+  };
+
+  // ==========================
+  // ADMIN ACTIONS ON BOOKINGS
+  // ==========================
+  const markPaid = async (bookingId) => {
+    if (!confirm("Tandai pembayaran sebagai LUNAS untuk booking ini?")) return;
+    try {
+      const res = await fetch(`${API}/api/bookings/${bookingId}/pay`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ set_status_to: "paid", payment_method: "admin_verify" })
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        console.error("markPaid failed:", res.status, text);
+        alert("Gagal menandai lunas. Cek console.");
+        return;
+      }
+
+      await loadLogs();
+      alert("Booking ditandai sebagai LUNAS.");
+    } catch (err) {
+      console.error("markPaid error:", err);
+      alert("Server error saat menandai lunas.");
+    }
+  };
+
+  const markCompleted = async (bookingId) => {
+    if (!confirm("Tandai booking ini sebagai SELESAI?")) return;
+    try {
+      const res = await fetch(`${API}/api/bookings/${bookingId}/pay`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ set_status_to: "completed", payment_method: "admin_update" })
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        console.error("markCompleted failed:", res.status, text);
+        alert("Gagal menandai selesai. Cek console.");
+        return;
+      }
+
+      await loadLogs();
+      alert("Booking ditandai sebagai SELESAI.");
+    } catch (err) {
+      console.error("markCompleted error:", err);
+      alert("Server error saat menandai selesai.");
+    }
   };
 
   return (
@@ -208,7 +307,7 @@ export default function Admin() {
       </div>
 
       {/* LIST KENDARAAN */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         {vehicles.map((v) => (
           <div key={v.id} className="bg-white p-4 rounded shadow">
             <img
@@ -234,6 +333,44 @@ export default function Admin() {
                 className="px-3 py-1 bg-red-500 text-white rounded"
               >
                 Hapus
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* LOG TRANSAKSI (ADMIN) */}
+      <h2 className="text-xl font-bold mt-6 mb-3">Log Transaksi</h2>
+      <div className="bg-white p-4 shadow rounded">
+        {loadingLogs && <p>Memuat log...</p>}
+        {!loadingLogs && logs.length === 0 && <p>Tidak ada transaksi.</p>}
+
+        {logs.map((l) => (
+          <div key={l.id} className="border-b py-3 flex flex-col md:flex-row md:items-center md:justify-between">
+            <div>
+              <div className="flex items-baseline gap-3">
+                <h3 className="font-semibold">{l.vehicles?.name || "— Kendaraan"}</h3>
+                <span className="text-xs text-gray-500">({l.booking_code})</span>
+              </div>
+              <p className="text-sm text-gray-600">{l.start_date} → {l.end_date}</p>
+              <p className="text-sm text-green-600 font-bold">Rp {Number(l.total_price).toLocaleString()}</p>
+              <p className="text-sm text-gray-600">Pembayaran: <span className="font-medium">{l.payment_status}</span> — Status: <span className="font-medium">{l.booking_status}</span></p>
+              <p className="text-sm text-gray-600">Pelanggan: <span className="font-medium">{l.users?.username || l.users?.email || "Anon"}</span></p>
+              <p className="text-xs text-gray-500">Email: {l.users?.email || "-"}</p>
+            </div>
+
+            <div className="mt-3 md:mt-0 flex gap-2">
+              <button
+                onClick={() => markPaid(l.id)}
+                className="px-3 py-1 bg-green-600 text-white rounded"
+              >
+                Tandai Lunas
+              </button>
+              <button
+                onClick={() => markCompleted(l.id)}
+                className="px-3 py-1 bg-blue-600 text-white rounded"
+              >
+                Tandai Selesai
               </button>
             </div>
           </div>

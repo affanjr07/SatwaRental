@@ -1,3 +1,4 @@
+// middleware/authMiddleware.js
 import jwt from "jsonwebtoken";
 
 export function authMiddleware(req, res, next) {
@@ -8,7 +9,7 @@ export function authMiddleware(req, res, next) {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // id + role
+    req.user = decoded; // harus berisi { id, role, ... }
     next();
   } catch (err) {
     res.status(401).json({ msg: "Invalid token" });
@@ -16,7 +17,7 @@ export function authMiddleware(req, res, next) {
 }
 
 export function adminOnly(req, res, next) {
-  if (req.user.role !== "admin") {
+  if (!req.user || req.user.role !== "admin") {
     return res.status(403).json({ msg: "Admins only" });
   }
   next();

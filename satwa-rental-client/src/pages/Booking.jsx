@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const API = import.meta.env.VITE_API_URL;
 
 export default function Booking() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { token } = useAuth();
   const [vehicle, setVehicle] = useState(null);
   const [tanggalMulai, setTanggalMulai] = useState("");
   const [tanggalSelesai, setTanggalSelesai] = useState("");
@@ -37,7 +39,6 @@ export default function Booking() {
     return <p className="pt-24 text-center text-lg">Memuat data kendaraan...</p>;
   }
 
-  // 🔥 Convert specification string → array otomatis jika strin
   const specs =
     typeof vehicle.specification === "string"
       ? vehicle.specification
@@ -46,13 +47,42 @@ export default function Booking() {
           .filter((s) => s.length > 0)
       : vehicle.specification || [];
 
+  const handleBooking = async () => {
+    if (!tanggalMulai || !tanggalSelesai) return alert("Isi tanggal mulai dan selesai.");
+
+    const payload = {
+      vehicle_id: vehicle.id,
+      start_date: tanggalMulai,
+      end_date: tanggalSelesai,
+      total_price: totalHarga
+    };
+
+    try {
+      const res = await fetch(`${API}/api/bookings`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      if (!res.ok) return alert(data.msg || "Gagal membuat booking.");
+
+      // redirect to payment with booking id
+      navigate(`/payment?bookingId=${data.booking.id}`);
+    } catch (err) {
+      console.error(err);
+      alert("Server error saat membuat booking.");
+    }
+  };
+
   return (
     <div className="pt-24 pb-16 container mx-auto px-6">
       <h1 className="text-3xl font-bold mb-6 text-center">Form Pemesanan</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-
-        {/* INFORMASI KENDARAAN */}
         <div className="bg-white shadow-lg rounded-2xl p-6">
           <h2 className="text-xl font-semibold mb-4">Kendaraan Dipilih</h2>
 
@@ -76,7 +106,6 @@ export default function Booking() {
             Rp {vehicle.price_per_day.toLocaleString()}/hari
           </p>
 
-          {/* SPESIFIKASI */}
           {specs.length > 0 && (
             <div className="mt-4">
               <h4 className="font-semibold mb-1">Spesifikasi:</h4>
@@ -89,7 +118,6 @@ export default function Booking() {
           )}
         </div>
 
-        {/* FORM PEMESANAN */}
         <div className="bg-white shadow-lg rounded-2xl p-6">
           <h2 className="text-xl font-semibold mb-4">Isi Data Pemesanan</h2>
 
@@ -113,7 +141,6 @@ export default function Booking() {
             />
           </div>
 
-          {/* RINGKASAN */}
           <div className="mt-6 p-4 bg-gray-50 border rounded-lg">
             <h3 className="font-bold text-lg mb-2">Ringkasan Pemesanan</h3>
 
@@ -129,7 +156,7 @@ export default function Booking() {
           </div>
 
           <button
-            onClick={() => navigate("/payment")}
+            onClick={handleBooking}
             className="mt-5 w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700"
           >
             Konfirmasi Pesanan
